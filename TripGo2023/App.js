@@ -1,112 +1,151 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import SignUp from "./components/SignUp"
+import Login from "./components/Login"
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import React, {useState} from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createStackNavigator()
+const Tab = createBottomTabNavigator();
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+const App =()=>{
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    // 로그인 처리 로직
+    // 로그인 성공 시 setIsLoggedIn(true) 호출
+    setIsLoggedIn(true);
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+  const handleLogout = () => {
+    // 로그아웃 처리 로직
+    // 로그아웃 성공 시 setIsLoggedIn(false) 호출
+    signOut(firebaseAuth)
+      .then(() => {
+        setIsLoggedIn(false);
+        console.log('로그아웃 성공');
+      })
+      .catch((error) => {
+        console.log('로그아웃 실패:', error);
+      });
+  };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+
+  return (
+    <NavigationContainer>
+      {isLoggedIn ? (
+        <Tab.Navigator
+          initialRouteName="mainTab"
+          screenOptions={{
+            activeBackgroundColor: 'white',
+            tabBarActiveTintColor: 'rgb(182,20,45)',
+            style: {
+              borderTopWidth: 0, // 상단 경계선 제거
+            },
+            headerShown: false,
+          }}
+        >
+          {/* <Tab.Screen
+            name="Main"
+            component={MainScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/homeIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
+          /> */}
+
+          {/* <Tab.Screen
+            name="MyPage"
+            component={UI}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/mypageIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
+          /> */}
+
+          {/* <Tab.Screen
+            name="PET등록"
+            component={AddPet}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                // <Image
+                //   source={require('./assets/addIcon.png')}
+                //   style={{ width: 30, height: 30 }}
+                // />
+              ),
+            }}
+          /> */}
+
+          {/* <Tab.Screen
+            name="챗봇"
+            component={Chat_Page}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                // <Image
+                //   source={require('./assets/chatIcon.png')}
+                //   style={{ width: 30, height: 30 }}
+                // />
+              ),
+            }}
+          /> */}
+          
+
+        </Tab.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Login"
+            component={(props) => <Login {...props} handleLogin={handleLogin} />}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: true }}
+          /> 
+
+
+          
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  );
+
+}
 
 export default App;
+
+const MainScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="main"
+        component={HM}
+        options={{
+          headerTitle: 'FindMyPet',
+          headerTitleStyle: {
+            fontSize: 24,
+            color: 'rgb(182,20,45)',
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Detail_Page" component={Detail_Page} />
+      <Stack.Screen name="MyPage" component={UI} />
+      
+    </Stack.Navigator>
+  );
+};

@@ -11,8 +11,8 @@ export default function Login({ handleLogin, navigation }) {
   const [password, setPassword] = useState('');
 
 
-  const imgSignup = require('../assets/Signup.png');
-  const imgLogin = require('../assets/Login.png');
+  // const imgSignup = require('../assets/Signup.png');
+  // const imgLogin = require('../assets/Login.png');
 
   const auth = firebaseAuth;
 
@@ -34,7 +34,7 @@ export default function Login({ handleLogin, navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/AppIcon.png')} style={styles.logo} />
+      {/* <Image source={require('../assets/AppIcon.png')} style={styles.logo} /> */}
 
       <TextInput
         style={styles.input}
