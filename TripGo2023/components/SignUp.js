@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet,Image } from 'react-native';
+
+import { StyleSheet, TextInput, Button, ImageBackground, KeyboardAvoidingView, Platform, TouchableOpacity, Text, Image, View } from 'react-native';
 import { firestoreDB,createUserWithEmailAndPassword,firebaseAuth , addDoc,doc,setDoc,getDoc} from '../firebaseConfig';
 
+import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
 const SignUp = () => {
@@ -11,12 +13,24 @@ const SignUp = () => {
 
   const [nickName, setnickName] = useState('');
 
+  const [selectedGender, setSelectedGender] = useState('');
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState('');
+
+
   const auth = firebaseAuth;
   const db = firestoreDB
 
 
   const handleNickName = (value) => {
     setnickName(value);
+  };
+
+  const handleGender = (value) => {
+    setGender(value);
+  };
+
+  const handleAge = (value) => {
+    setAge(value);
   };
 
   const handleSignup = () => {
@@ -68,29 +82,58 @@ const SignUp = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* <Image source={require('../assets/petLogo.png')} style={styles.logo} /> */}
-      <TextInput
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        secureTextEntry
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="NickName"
-        onChangeText={(text) => setnickName(text)}
-        value={nickName}
-        style={styles.input}
-      />
-      <Button onPress={handleSignup} title="회원가입 진행" color="coral" />
-    </View>
+    <ImageBackground source={require("../assets/LoginImage.png")} style={styles.imgContainer}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+
+          {/* <Image source={require('../assets/petLogo.png')} style={styles.logo} /> */}
+          <TextInput
+            placeholder="Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Password"
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            secureTextEntry
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="NickName"
+            onChangeText={(text) => setnickName(text)}
+            value={nickName}
+            style={styles.input}
+          />
+          
+          <Picker
+            selectedValue={selectedGender}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setSelectedGender(itemValue)}
+          >
+            <Picker.Item label="남성" value="male" />
+            <Picker.Item label="여성" value="female" />
+          </Picker>
+
+          <Picker
+            selectedValue={selectedAgeGroup}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setSelectedAgeGroup(itemValue)}
+          >
+            {['10대', '20대', '30대', '40대', '50대', '60대', '70대', '80대', '90대'].map((age) => (
+              <Picker.Item key={age} label={age} value={age} />
+            ))}
+          </Picker>
+          
+
+          
+
+          <TouchableOpacity onPress={handleSignup} style={styles.button}>
+            <Text style={styles.buttonText}>회원가입 진행</Text>
+          </TouchableOpacity>
+
+        </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
@@ -98,25 +141,72 @@ export default SignUp;
 
 
 const styles = StyleSheet.create({
+  imgContainer: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    backgroundColor: 'white',
-  },
-  logo: {
-    width: 300,
-    height: 300,
-    marginBottom: 20,
-    alignSelf: 'center',
+    padding: 20,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    width: '100%',
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.85)', // 투명도 조정
+    paddingHorizontal: 15,
+    borderColor: '#ddd',
     borderWidth: 1,
-    marginBottom: 12,
-    padding: 10,
-    borderRadius: 8,
+    borderRadius: 10,
+    color: '#333', // 입력 텍스트 색상 조정
   },
+  button: {
+    backgroundColor: '#ff7f50', // Coral 색상 대신, 여행 앱에 어울리는 색상으로 변경
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 20, // 버튼의 둥근 모서리를 조금 더 둥글게
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 10,
+    shadowColor: 'rgba(0,0,0, .4)', // 그림자 효과 추가
+    shadowOffset: { height: 1, width: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 1,
+    elevation: 2, // 안드로이드를 위한 그림자 효과
+    marginTop:30,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    
+  },
+
+  buttonSignUp: {
+    backgroundColor: 'rgba(135,206,250,0.85)', // skyblue 배경에 투명도 적용
+  },
+  buttonTextSignUp: {
+    color: 'white',
+  },
+  logo: {
+    width: 281.5,
+    height: 80,
+    marginBottom: 70,
+  },
+  picker: {
+    height: 50,
+    width: '45%',
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10,
+    color: '#333',
+  },
+
 });
 

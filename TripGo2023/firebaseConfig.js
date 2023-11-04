@@ -12,7 +12,7 @@ import {arrayUnion,getFirestore,doc, setDoc,collection, addDoc,getDoc, query, or
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    
+      
 };
 
 // Initialize Firebase

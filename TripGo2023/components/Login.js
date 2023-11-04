@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
+import {View, StyleSheet, TextInput, Button, ImageBackground, KeyboardAvoidingView, Platform, TouchableOpacity, Text, Image } from 'react-native';
 import { firebaseAuth, signInWithEmailAndPassword } from '../firebaseConfig';
 
 export default function Login({ handleLogin, navigation }) {
@@ -10,10 +10,6 @@ export default function Login({ handleLogin, navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-
-  // const imgSignup = require('../assets/Signup.png');
-  // const imgLogin = require('../assets/Login.png');
-
   const auth = firebaseAuth;
 
   const handleLoginPress = () => {
@@ -21,7 +17,6 @@ export default function Login({ handleLogin, navigation }) {
       .then((userCredential) => {
         // 로그인 성공 처리
         console.log('로그인 성공:', userCredential.user);
-
         handleLogin();
       })
       .catch((error) => {
@@ -33,73 +28,89 @@ export default function Login({ handleLogin, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      {/* <Image source={require('../assets/AppIcon.png')} style={styles.logo} /> */}
+    
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={true}
-        onChangeText={(text) => setPassword(text)}
-      />
+    <ImageBackground source={require("../assets/LoginImage.png")} style={styles.imgContainer}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+        
+      <Image source={require("../assets/loginIcon.png")} style={styles.logo} />
 
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}>
-          <Button onPress={handleLoginPress} title="로그인" color="black" />
-        </View>
-        <View style={[styles.button]}>
-          <Button  onPress={handleSignup} title="회원가입" color="skyblue" fontSize={28}/>
-        </View>
-      </View>
-    </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          onChangeText={setEmail}
+          value={email}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry={true}
+          onChangeText={setPassword}
+          value={password}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
+          <Text style={styles.buttonText}>로그인</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, styles.buttonSignUp]} onPress={handleSignup}>
+          <Text style={[styles.buttonText, styles.buttonTextSignUp]}>회원가입</Text>
+        </TouchableOpacity>
+      
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  imgContainer: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
-  },
-  logo: {
-    width: '59.3%',
-    height: '8%',
-    marginBottom: 30,
+    padding: 20,
   },
   input: {
-    marginBottom: 20,
-    fontSize: 20,
-    width: '80%',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  buttonContainer: {
-    marginTop:20,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '60%',
-    height: 100,
+    height: 50,
+    width: '100%',
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)', // 흰색 배경에 투명도 적용
+    paddingHorizontal: 15,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10,
   },
   button: {
-    marginTop:0,
-    width: '120%',
-    height: 50,
-    marginBottom: 10,
-    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.8)', // 검정색 배경에 투명도 적용
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 10,
+  },
+
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonSignUp: {
+    backgroundColor: 'rgba(135,206,250,0.8)', // skyblue 배경에 투명도 적용
+  },
+  buttonTextSignUp: {
+    color: 'white',
   },
   logo: {
-    width: 300,
-    height: 300,
-    marginBottom: 20,
-    alignSelf: 'center',
+    width: 281.5,
+    height: 80,
+    marginBottom: 70,
   },
+
 });
