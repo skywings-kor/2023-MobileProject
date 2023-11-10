@@ -1,102 +1,80 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView,FlatList } from 'react-native';
+ // or another icon library of your choice
 
 const Main = () => {
 
-  const gridData = [
-      {
-    id: 'g1',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 1',
-    city: 'City A'
-  },
-  {
-    id: 'g2',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 2',
-    city: 'City B'
-  },
-  {
-    id: 'g3',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 3',
-    city: 'City C'
-  },
-  {
-    id: 'g4',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 4',
-    city: 'City D'
-  },
-  {
-    id: 'g21',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 1',
-    city: 'City A'
-  },
-  {
-    id: 'g22',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 2',
-    city: 'City B'
-  },
-  {
-    id: 'g23',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 3',
-    city: 'City C'
-  },
-  {
-    id: 'g24',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'Region 4',
-    city: 'City D'
-  },
+  const horizontalData = [
+    { id: '8', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
+    { id: '9', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
+    { id: '10', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
+    { id: '11', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
+    { id: '12', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
+
+  
   ];
-   const gridData2 = [
-      {
-    id: 'g31',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'text 1',
-    city: 'text'
-  },
-  {
-    id: 'g32',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'text 2',
-    city: 'text'
-  },
-  {
-    id: 'g33',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'text 3',
-    city: 'text'
-  },
-  {
-    id: 'g34',
-    u_img: 'https://via.placeholder.com/150',
-    timestamp: new Date(),
-    region: 'text 4',
-    city: 'text'
-  },
+
+  // 수직 스크롤 데이터
+  const verticalData = [
+    { id: '1', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '2', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '3', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '4', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '5', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '6', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '7', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
   ];
+
+  const renderHorizontalItem = ({ item }) => (
+    <TouchableOpacity style={styles.gridItemHorizontal}>
+      <Image source={{ uri: item.u_img }} style={styles.gridImageHorizontal} />
+      <Text style={styles.gridText}>{item.region}</Text>
+      <Text style={styles.gridText}>{item.city}</Text>
+    </TouchableOpacity>
+  );
+
+  // 수직 스크롤 아이템 렌더링 함수
+  const renderVerticalItem = ({ item }) => (
+    <TouchableOpacity style={styles.gridItem}>
+      <Image source={{ uri: item.u_img }} style={styles.gridImage} />
+      <Text style={styles.gridDateLabel}>
+        {item.timestamp?.toISOString().split('T')[0]}
+      </Text>
+      <Text style={styles.gridRegionLabel}>
+        {item.region} {item.city}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const HorizontalSection = () => (
+    <>
+    <View style={styles.actionButton}>
+          <Text style={styles.actionText}>Text12</Text>
+    </View>
+    <Text style={styles.contentTitle}>Text4</Text>
+    <FlatList
+      data={horizontalData}
+      horizontal={true}
+      renderItem={renderHorizontalItem}
+      keyExtractor={(item, index) => item.id + ':' + index}
+      style={styles.horizontalList}
+    />
+    <Text style={styles.contentTitle}>Text5</Text>
+    </>
+  );
  
   return (
-    <>
-      <ScrollView>
+    <View style={styles.screenContainer}>
+      {/* 헤더 섹션 */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>TripGo</Text>
+        {/* 추가적인 아이콘이 필요한 경우 여기에 추가 */}
+        <View style={styles.headerIcons}>
+          {/* Icons can be added here if needed */}
+        </View>
+      </View>
 
-        {/* Horizontal Menu under the logo */}
+      {/* 수평 메뉴 */}
       <View style={styles.horizontalMenu}>
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuItemText}>Text1</Text>
@@ -108,57 +86,34 @@ const Main = () => {
           <Text style={styles.menuItemText}>Text3</Text>
         </TouchableOpacity>
       </View>
+     
       
-      {/* Main Content Section */}
-        <View style={styles.actionButton}>
-          <Text style={styles.actionText}>Text12</Text>
-        </View>
-        <Text style={styles.contentTitle}>Text4</Text>
-
-         {/* Horizontal Scroll Container */}
-       
-         <FlatList
-            data={gridData2}
-            horizontal={true} 
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.gridItemHorizontal}>
-                <Image source={{ uri: item.u_img }} style={styles.gridImageHorizontal} />
-                <Text style={styles.gridText}>{item.region}</Text>
-                <Text style={styles.gridText}>{item.city}</Text>
-              </TouchableOpacity>
-            )}
-          />  
-       
-        <Text style={styles.contentTitle}>Text18</Text>
-        
-        <FlatList
-          data={gridData}
-          numColumns={2}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.gridItem}>
-              <Image source={{ uri: item.u_img }} style={styles.gridImage} />
-              <Text style={styles.gridDateLabel}>
-                {item.timestamp?.toISOString().split('T')[0]}
-              </Text>
-              <Text style={styles.gridRegionLabel}>
-                {item.region} {item.city}
-              </Text>
-            </TouchableOpacity>
-          )}
-          
-        />
-        </ScrollView>
-
-    
-        
-    </>
+      
+  
+      <FlatList
+        data={verticalData}
+        renderItem={renderVerticalItem}
+        keyExtractor={(item, index) => item.id + ':' + index}
+        numColumns={2}
+        ListHeaderComponent={HorizontalSection}
+        style={styles.verticalList}
+      />
+     
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+  },
 
+  horizontalList: {
+    flexGrow: 0, 
+  },
+  verticalList: {
+    flex: 1,
+  },
    container: {
     flex: 1,
   },
@@ -237,7 +192,7 @@ const styles = StyleSheet.create({
    
   },
     gridItem: {
-    flex: 1, 
+    flex: 1 / 2, 
     aspectRatio: 1, 
     margin: 4, 
   },
