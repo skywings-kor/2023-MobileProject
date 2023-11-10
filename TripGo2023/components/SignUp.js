@@ -13,8 +13,8 @@ const SignUp = () => {
 
   const [nickName, setnickName] = useState('');
 
-  const [selectedGender, setSelectedGender] = useState('');
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState('');
+  const [selectedGender, setSelectedGender] = useState("남성");
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState("10대");
 
 
   const auth = firebaseAuth;
@@ -43,10 +43,14 @@ const SignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const uid = userCredential.user.uid;
-        const userDocRef = doc(db, `findMyPet/${uid}`)
+        const userDocRef = doc(db, `userInfo/${uid}`)
         const userData = {
             userID: uid,
             nickname: nickName,
+            gender: selectedGender,
+            ageGroup: selectedAgeGroup,
+            profile_img: '',
+            point: 0
         }
 
         //파이어스토어한테 이제 보냅니다

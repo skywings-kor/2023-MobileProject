@@ -4,10 +4,13 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import SignUp from "./components/SignUp"
 import Login from "./components/Login"
+import HM from "./components/Main"
+import UI from "./components/MyPage"
+import PD from "./components/AreaProduct/Product"
+import detailPD from "./components/AreaProduct/ProductDetail"
 
 import React, {useState} from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
-
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -49,21 +52,21 @@ const App =()=>{
             headerShown: false,
           }}
         >
-          {/* <Tab.Screen
-            name="Main"
+          <Tab.Screen
+            name="홈"
             component={MainScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Image
-                  source={require('./assets/homeIcon.png')}
+                  source={require('./assets/Main_Icon.png')}
                   style={{ width: 30, height: 30 }}
                 />
               ),
             }}
-          /> */}
+          />
 
-          {/* <Tab.Screen
-            name="MyPage"
+          <Tab.Screen
+            name="마이페이지"
             component={UI}
             options={{
               tabBarIcon: ({ color, size }) => (
@@ -73,20 +76,20 @@ const App =()=>{
                 />
               ),
             }}
-          /> */}
+          />
 
-          {/* <Tab.Screen
-            name="PET등록"
-            component={AddPet}
+          <Tab.Screen
+            name="지역특산품"
+            component={PD}
             options={{
               tabBarIcon: ({ color, size }) => (
-                // <Image
-                //   source={require('./assets/addIcon.png')}
-                //   style={{ width: 30, height: 30 }}
-                // />
+                <Image
+                  source={require('./assets/mypageIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
               ),
             }}
-          /> */}
+          />
 
           {/* <Tab.Screen
             name="챗봇"
@@ -134,7 +137,7 @@ const MainScreen = () => {
         name="main"
         component={HM}
         options={{
-          headerTitle: 'FindMyPet',
+          headerTitle: 'TripGO',
           headerTitleStyle: {
             fontSize: 24,
             color: 'rgb(182,20,45)',
@@ -142,10 +145,12 @@ const MainScreen = () => {
           },
         }}
       />
-      <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="Detail_Page" component={Detail_Page} />
-      <Stack.Screen name="MyPage" component={UI} />
+
+      <Stack.Screen name="상세페이지" component={detailPD} />
+      {/* <Stack.Screen name="Home" component={Home} />
       
+      <Stack.Screen name="MyPage" component={UI} />
+     */}
     </Stack.Navigator>
   );
 };
