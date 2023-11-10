@@ -36,6 +36,10 @@ const MyPage = () => {
   const [editAge, setEditAge] = useState('');
   const [editGender, setEditGender] = useState('');
 
+  
+  const currentUser = firebaseAuth.currentUser; // 현재 로그인한 사용자 가져오기
+
+
   //useState에서 변경하기 위한 용도입니다!
   const handleInfoChange = () => {
     setEditNickname(profile.nickname);
@@ -63,26 +67,45 @@ const MyPage = () => {
 
     const blob = await response.blob();
     
-    const storageRef = ref(storage, `image/userImage`);
+    const storageRef = ref(storage, `image/userImage/${currentUser.uid}`);
     
     await uploadBytes(storageRef, blob);
     
-    const imageRef = ref(storage, `image//userImage`);
+    const imageRef = ref(storage, `image/userImage/${currentUser.uid}`);
     const downloadURL = await getDownloadURL(imageRef);
 
     console.log (downloadURL);
     
-    alert('이미지 업로드가 완료되었습니다.')
-    return downloadURL;
+    const docRef = doc(firestoreDB, "userInfo", currentUser.uid);
 
+    // Update the document with the new data
+    try {
+      await updateDoc(docRef, {
+        profile_img: downloadURL,
+      });
+      
+      // Assuming you want to update the state as well
+      setProfile(prevState => ({
+        ...prevState,
+        profile_img: downloadURL,
+      }));
+  
+      Alert.alert("업데이트 완료!", "정상적으로 변경이 완료되었습니다.");
+    } catch (error) {
+      console.error("업데이트에 실패했습니다:", error);
+      Alert.alert("업데이트에 실패했습니다", "알 수 없는 오류가 발생하였습니다.");
+    }
 
     
+    alert('이미지 업로드가 완료되었습니다.')
+    
+    
+
   } catch (error) {
       console.error('이미지 업로드 중 오류 발생',error)
     }
   }
 
-  const currentUser = firebaseAuth.currentUser; // 현재 로그인한 사용자 가져오기
 
   // 여기가 그 개인 정보 변경 용
   const saveProfileChanges = async () => {
@@ -191,7 +214,7 @@ const MyPage = () => {
     <View>
       <View style={styles.profileContainer}>
         <TouchableOpacity onPress={handleChangePhoto}>
-          <Image source={{ uri: user.image }} style={styles.profileImage} />
+          <Image source={{ uri: profile.profile_img }} style={styles.profileImage} />
         </TouchableOpacity> 
        
         <View style={styles.profileTextContainer}>

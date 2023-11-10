@@ -16,7 +16,7 @@ const Main = () => {
 
   // 수직 스크롤 데이터
   const verticalData = [
-    { id: '1', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
+    { id: '1', u_img: 'https://via.plac eholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
     { id: '2', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
     { id: '3', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
     { id: '4', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
