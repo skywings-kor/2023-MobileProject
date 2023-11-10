@@ -75,7 +75,7 @@ const Main = () => {
       </View>
 
       {/* 수평 메뉴 */}
-      <View style={styles.horizontalMenu}>
+      {/* <View style={styles.horizontalMenu}>
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuItemText}>Text1</Text>
         </TouchableOpacity>
@@ -85,7 +85,7 @@ const Main = () => {
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuItemText}>Text3</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
      
       
       
@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
+    color: 'rgb(182,20,45)',
     fontWeight: 'bold',
   },
   headerIcons: {

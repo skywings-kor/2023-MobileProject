@@ -136,7 +136,9 @@ const MainScreen = () => {
       <Stack.Screen
         name="main"
         component={HM}
+        
         options={{
+          headerShown: false,
           headerTitle: 'TripGO',
           headerTitleStyle: {
             fontSize: 24,
@@ -144,6 +146,7 @@ const MainScreen = () => {
             fontWeight: 'bold',
           },
         }}
+        
       />
 
       <Stack.Screen name="상세페이지" component={detailPD} />
