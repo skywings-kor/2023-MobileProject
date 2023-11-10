@@ -50,7 +50,7 @@ const SignUp = () => {
             gender: selectedGender,
             ageGroup: selectedAgeGroup,
             profile_img: '',
-            point: 0
+            point: 1000,
         }
 
         //파이어스토어한테 이제 보냅니다

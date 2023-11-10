@@ -214,7 +214,8 @@ const MyPage = () => {
     <View>
       <View style={styles.profileContainer}>
         <TouchableOpacity onPress={handleChangePhoto}>
-          <Image source={{ uri: profile.profile_img }} style={styles.profileImage} />
+          <Image source ={profile.profile_img ? { uri: profile.profile_img} : require("../assets/user_Icon.png")} style={styles.profileImage}/>
+          {/* <Image source={{ uri: profile.profile_img || ""}} style={styles.profileImage} /> */}
         </TouchableOpacity> 
        
         <View style={styles.profileTextContainer}>
