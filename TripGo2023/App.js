@@ -2,12 +2,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
+import QrGener from "./components/QrGener"
 import SignUp from "./components/SignUp"
 import Login from "./components/Login"
 import HM from "./components/Main"
 import UI from "./components/MyPage"
 import PD from "./components/AreaProduct/Product"
 import detailPD from "./components/AreaProduct/ProductDetail"
+import productAdd from "./components/AreaProduct/ProductAdd"
+import Map from "./components/Map/Map"
 
 import React, {useState} from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
@@ -91,18 +94,31 @@ const App =()=>{
             }}
           />
 
-          {/* <Tab.Screen
-            name="챗봇"
-            component={Chat_Page}
+          <Tab.Screen
+            name="QR결재"
+            component={QrGener}
             options={{
               tabBarIcon: ({ color, size }) => (
-                // <Image
-                //   source={require('./assets/chatIcon.png')}
-                //   style={{ width: 30, height: 30 }}
-                // />
+                <Image
+                  source={require('./assets/mypageIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
               ),
             }}
-          /> */}
+          />
+
+          <Tab.Screen
+            name="지도"
+            component={Map}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/mypageIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
+          />
           
 
         </Tab.Navigator>
@@ -150,8 +166,9 @@ const MainScreen = () => {
       />
 
       <Stack.Screen name="상세페이지" component={detailPD} />
-      {/* <Stack.Screen name="Home" component={Home} />
-      
+      <Stack.Screen name="특산물추가" component={productAdd} />
+
+      {/*
       <Stack.Screen name="MyPage" component={UI} />
      */}
     </Stack.Navigator>

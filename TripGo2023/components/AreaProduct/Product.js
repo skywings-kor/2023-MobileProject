@@ -1,8 +1,12 @@
 import React,{ useState }  from 'react';
 import { View, Text, FlatList, StyleSheet, Image,TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+
 import ProudctDetail from './ProductDetail'
+import ProductAdd from './ProductAdd'
+
 import { useNavigation } from '@react-navigation/native';
+
 // Dummy product data
 const products = new Array(10).fill(null).map((_, index) => ({
     id: String(index),
@@ -24,6 +28,7 @@ const products = new Array(10).fill(null).map((_, index) => ({
 
 
 const Product = () => {
+
   const navigation = useNavigation();
 
   const handleItemClick = (item) => {
@@ -31,6 +36,10 @@ const Product = () => {
   }
 
   const [selectedCity, setSelectedCity] = useState();
+
+  const handleAddProduct=()=>{
+    navigation.navigate('특산물추가');
+  }
 
   const koreanCities = [
     '서울',
@@ -55,15 +64,26 @@ const Product = () => {
   return (
     <View>
       <View style={styles.container}>
-      <Picker
-        selectedValue={selectedCity}
-        onValueChange={(itemValue, itemIndex) => setSelectedCity(itemValue)}
-        style={styles.picker}
-      >
-        {koreanCities.map((city, index) => (
-          <Picker.Item key={index} label={city} value={city} />
-        ))}
-      </Picker>
+        <View style={styles.pickerContainer}>
+
+          <Picker
+            selectedValue={selectedCity}
+            onValueChange={(itemValue, itemIndex) => setSelectedCity(itemValue)}
+            style={styles.picker}
+          >
+
+            {koreanCities.map((city, index) => (
+              <Picker.Item key={index} label={city} value={city} />
+            ))}
+          </Picker>
+          
+          <TouchableOpacity 
+            style={styles.addButton} 
+            onPress={() => handleAddProduct()}
+          >
+            <Text> + </Text>
+          </TouchableOpacity>
+        </View>
       </View>
  
     
@@ -88,6 +108,16 @@ const Product = () => {
 };
 
 const styles = StyleSheet.create({
+  addButton: {
+    // '+' 버튼 스타일
+    marginLeft: 10,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#007bff',
+    borderRadius: 15,
+  },
   row: {
     flex: 1,
     justifyContent: 'space-around',
@@ -120,6 +150,13 @@ const styles = StyleSheet.create({
     height: 50,
 
     width: '50%',
+  },
+  pickerContainer: {
+    // Picker와 '+' 버튼을 포함하는 컨테이너
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:'center',
+    width:'100%'
   },
 });
 
