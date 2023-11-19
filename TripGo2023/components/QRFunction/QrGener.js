@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { useFocusEffect } from '@react-navigation/native';
-import { firebaseAuth, firestoreDB, doc, getDoc } from '../firebaseConfig';
+import { useFocusEffect, useNavigation  } from '@react-navigation/native';
+import { firebaseAuth, firestoreDB, doc, getDoc } from '../../firebaseConfig';
 
-const imageSource = require('../assets/MoneyIcon.png');
+const imageSource = require('../../assets/MoneyIcon.png');
 
 const QrGener = () => {
+  const navigation = useNavigation();
+  
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [qrValue, setQrValue] = useState('');
 
   const currentUser = firebaseAuth.currentUser;
+
+  const handlePaymentPress = () => {
+    // Handle the payment logic here
+    navigation.navigate('QR스캔')
+    console.log('Payment button pressed');
+  };
 
 
   
@@ -66,9 +74,17 @@ const QrGener = () => {
 
   return (
     <View style={styles.container}>
+      
       <Image source={imageSource} style={styles.logo} />
+      
+      <TouchableOpacity onPress={handlePaymentPress} style={styles.paymentButton}>
+        <Text style={styles.paymentButtonText}>결제 하기</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>보유 포인트: {profile?.point}</Text>
+      
       <QRCode value={qrValue} size={200} />
+      
       <Text style={styles.subtitle}>{profile?.nickname}님의 QR 코드입니다.</Text>
       {/* Display additional user information if needed */}
     </View>
@@ -102,6 +118,24 @@ const styles = StyleSheet.create({
     width: '77%',
     height: '7%',
     marginBottom: 30,
+  },
+
+  paymentButton: {
+    backgroundColor: '#007bff', // Bootstrap primary blue color
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    elevation: 2, // This adds a slight shadow on Android
+    shadowOpacity: 0.2, // and these lines add shadow on iOS
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 1 },
+    marginTop: 20, // Add some space on top of the button
+  },
+  paymentButtonText: {
+    color: '#ffffff', // White text color
+    fontSize: 18,
+    fontWeight: '600', // Semi-bold text
+    textAlign: 'center',
   },
 
   // ... other styles ...

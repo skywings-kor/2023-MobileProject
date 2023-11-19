@@ -2,15 +2,24 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
-import QrGener from "./components/QrGener"
 import SignUp from "./components/SignUp"
 import Login from "./components/Login"
 import HM from "./components/Main"
 import UI from "./components/MyPage"
+
 import PD from "./components/AreaProduct/Product"
 import detailPD from "./components/AreaProduct/ProductDetail"
 import productAdd from "./components/AreaProduct/ProductAdd"
+
 import Map from "./components/Map/Map"
+
+import Camera from "./components/Camera/Camera"
+import Review from "./components/Camera/Review"
+
+import Payment from "./components/QRFunction/Payment"
+import QrGener from "./components/QRFunction/QrGener"
+import QRScannerScreen from "./components/QRFunction/QRScannerScreen"
+
 
 import React, {useState} from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
@@ -119,6 +128,20 @@ const App =()=>{
               ),
             }}
           />
+
+          <Tab.Screen
+            name="관광인증"
+            component={Camera}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/mypageIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
+          />
+
           
 
         </Tab.Navigator>
@@ -166,7 +189,13 @@ const MainScreen = () => {
       />
 
       <Stack.Screen name="상세페이지" component={detailPD} />
+
+      <Stack.Screen name="리뷰등록" component={Review} />
+
       <Stack.Screen name="특산물추가" component={productAdd} />
+      <Stack.Screen name="QR결재" component={Payment} />
+      {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
+      <Stack.Screen name="QR스캔" component={QRScannerScreen} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />
