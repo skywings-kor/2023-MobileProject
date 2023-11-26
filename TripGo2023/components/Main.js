@@ -1,8 +1,12 @@
 import React, { useState,useEffect ,useRef  } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView,FlatList, Linking  } from 'react-native';
- // or another icon library of your choice
+
+import Config from '../API_Config'
 
 const Main = () => {
+  //API 호출
+  const Tour_apiKey = Config.TOUR_API_KEY;
+
   //오늘 날짜 계산
   const currentDate = new Date();
   const formattedDate = currentDate.getFullYear() 
@@ -96,7 +100,10 @@ const Main = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${process.env.TOUR_API_KEY}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&eventStartDate=${formattedDate}`);
+        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${Tour_apiKey}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&eventStartDate=${formattedDate}`);
+        console.log("이건왜 안됨")
+        console.log(process.env.TOUR_API_KEY)
+
         const data = await response.json();
         setFestival_Data(data.response.body.items.item);
       } catch (error) {

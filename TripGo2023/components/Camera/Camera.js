@@ -69,7 +69,7 @@ const CameraScreen = () => {
     setPhoto(null);
     // Ensure that you're using `photo.path` instead of `photo.uri`
     // Pass photo and location to the next screen or save it
-    navigation.navigate('리뷰등록', { photoUri: photo.uri, location });
+    navigation.navigate('선택', { photoUri: photo.uri, location });
   };
 
   const retakePicture = () => {
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   captureButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#ddec08',
     borderRadius: 50,
     width: 70,
     height: 70,

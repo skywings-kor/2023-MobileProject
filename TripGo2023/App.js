@@ -2,23 +2,30 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
+//메인
 import SignUp from "./components/SignUp"
 import Login from "./components/Login"
 import HM from "./components/Main"
 import UI from "./components/MyPage"
 
+//지역상품
 import PD from "./components/AreaProduct/Product"
 import detailPD from "./components/AreaProduct/ProductDetail"
 import productAdd from "./components/AreaProduct/ProductAdd"
 
+//지도 관련
 import Map from "./components/Map/Map"
 
+//카메라 관련
 import Camera from "./components/Camera/Camera"
 import Review from "./components/Camera/Review"
+import Option from "./components/Camera/Option"
 
+//QR관련
 import Payment from "./components/QRFunction/Payment"
 import QrGener from "./components/QRFunction/QrGener"
 import QRScannerScreen from "./components/QRFunction/QRScannerScreen"
+
 
 
 import React, {useState} from 'react';
@@ -196,6 +203,8 @@ const MainScreen = () => {
       <Stack.Screen name="QR결재" component={Payment} />
       {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
       <Stack.Screen name="QR스캔" component={QRScannerScreen} />
+
+      <Stack.Screen name="선택" component={QRScannerScreen} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />

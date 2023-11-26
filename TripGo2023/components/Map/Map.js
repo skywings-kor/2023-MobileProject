@@ -11,10 +11,14 @@ import { Picker } from "@react-native-picker/picker";
 import MapView, { Marker } from 'react-native-maps';
 import { serverTimestamp,firestoreDB, firebaseAuth,collection, doc, setDoc, getDoc, query, orderBy, limit, getDocs, analytics, storage, ref, uploadBytes, getDownloadURL ,onAuthStateChanged, addDoc } from '../../firebaseConfig';
 
-
+import Config from '../../API_Config'
 
 
 const Map=()=>{
+
+  //API 호출
+  const Tour_apiKey = Config.TOUR_API_KEY;
+
   const regions = [
       { name: '대전광역시', latitude: 36.3504, longitude: 127.3845 },
       { name: '서울특별시', latitude: 37.5665, longitude: 126.9780 },
@@ -356,9 +360,11 @@ const Map=()=>{
       if(chinge == 1) setchinge(0);
       else setchinge(1);
       mapRef.current.animateToRegion(newRegion);
-    
-      const url = `https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${process.env.TOUR_API_KEY}&numOfRows=${selectCount}&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&mapX=${location.longitude}&mapY=${location.latitude}&radius=10000&contentTypeId=12`;
-    
+
+      const url = `https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=${selectCount}&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&mapX=${location.longitude}&mapY=${location.latitude}&radius=10000&contentTypeId=12`;
+      
+      
+
       try {
         const response = await fetch(url);
 

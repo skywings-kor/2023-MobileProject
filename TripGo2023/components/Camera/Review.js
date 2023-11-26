@@ -11,7 +11,7 @@ const ReviewScreen = ({ route, navigation }) => {
 
   const submitReview = () => {
     console.log(reviewText, rating, satisfied,);
-    navigation.goBack();
+    navigation.navigate('main');
   };
 
   const toggleRating = (value) => {

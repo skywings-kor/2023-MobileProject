@@ -64,3 +64,6 @@ firebaseConfig.js
 
 # API KEY
 .env
+API_Config.js
+
+#APP/SRC
