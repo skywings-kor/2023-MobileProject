@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#007bff',
     borderRadius: 15,
+    color: 'black',
   },
   row: {
     flex: 1,
@@ -138,9 +139,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 5,
+    color: 'black',
   },
   productPrice: {
     fontSize: 14,
+    color: 'black',
   },
   container: {
     alignItems:'center',

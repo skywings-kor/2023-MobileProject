@@ -96,7 +96,7 @@ const App =()=>{
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Image
-                  source={require('./assets/mypageIcon.png')}
+                  source={require('./assets/goods_Icon.png')}
                   style={{ width: 30, height: 30 }}
                 />
               ),
@@ -109,7 +109,7 @@ const App =()=>{
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Image
-                  source={require('./assets/mypageIcon.png')}
+                  source={require('./assets/qr_Icon.png')}
                   style={{ width: 30, height: 30 }}
                 />
               ),
@@ -122,7 +122,7 @@ const App =()=>{
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Image
-                  source={require('./assets/mypageIcon.png')}
+                  source={require('./assets/map_Icon.png')}
                   style={{ width: 30, height: 30 }}
                 />
               ),
@@ -135,7 +135,7 @@ const App =()=>{
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Image
-                  source={require('./assets/mypageIcon.png')}
+                  source={require('./assets/tour_Icon.png')}
                   style={{ width: 30, height: 30 }}
                 />
               ),

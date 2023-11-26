@@ -1,60 +1,110 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { useFocusEffect, useNavigation  } from '@react-navigation/native';
-import { firebaseAuth, firestoreDB, doc, getDoc } from '../../firebaseConfig';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { firebaseAuth, firestoreDB, doc, getDoc, onSnapshot } from '../../firebaseConfig';
 
 const imageSource = require('../../assets/MoneyIcon.png');
 
 const QrGener = () => {
   const navigation = useNavigation();
-  
+  const isFocused = useIsFocused();
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [qrValue, setQrValue] = useState('');
+  const [entryTime, setEntryTime] = useState(new Date().toISOString());
+  const [previousPoint, setPreviousPoint] = useState(null);
+  const [isFirstEntry, setIsFirstEntry] = useState(true);
 
   const currentUser = firebaseAuth.currentUser;
 
   const handlePaymentPress = () => {
     // Handle the payment logic here
-    navigation.navigate('QR스캔')
+    navigation.navigate('QR스캔');
     console.log('Payment button pressed');
   };
 
+  useEffect(() => {
+    if (isFocused) {
+      setEntryTime(new Date().toISOString());
+    }
+  }, [isFocused]);
 
-  
-  useFocusEffect(
-    React.useCallback(() => {
-      if (currentUser) {
-        const entryTime = new Date().toISOString();
-        const fetchProfile = async () => {
-          try {
-            const docRef = doc(firestoreDB, "userInfo", currentUser.uid);
-            const docSnap = await getDoc(docRef);
+  useEffect(() => {
+    let unsubscribe;
 
-            if (docSnap.exists()) {
-              setProfile({ id: docSnap.id, ...docSnap.data() });
-              // Generate QR value including current time
-              const newQrValue = JSON.stringify({
-                userId: currentUser.uid,
-                points: docSnap.data().point,
-                entryTime: entryTime,
-              });
-              setQrValue(newQrValue);
-            } else {
-              console.log("No such document!");
-            }
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-          } finally {
-            setLoading(false);
-          }
-        };
+    if (currentUser) {
+      const docRef = doc(firestoreDB, 'userInfo', currentUser.uid);
+      unsubscribe = onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setProfile({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          console.log('No such document!');
+        }
+      });
+    }
 
-        fetchProfile();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
       }
-    }, [currentUser])
-  );
+    };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (profile && entryTime) {
+      const generateQrValue = () => {
+        const newQrValue = JSON.stringify({
+          userId: currentUser.uid,
+          points: profile?.point || 0,
+          entryTime: entryTime,
+        });
+        setQrValue(newQrValue);
+      };
+      generateQrValue();
+    }
+  }, [profile, entryTime]);
+
+  useEffect(() => {
+    if (profile) {
+      setPreviousPoint(profile?.point); // Set previousPoint on initial render
+    }
+  }, [profile]); // Depend on profile to run only once after profile is set
+  
+  useEffect(() => {
+    if (profile && previousPoint !== null && !isFirstEntry) {
+      if (profile.point !== previousPoint) {
+        Alert.alert('결제 성공', '결제가 성공적으로 이루어졌습니다.');
+      }
+      setPreviousPoint(profile?.point); // Update previousPoint on subsequent renders
+    }
+    setIsFirstEntry(false); // Set isFirstEntry to false after first execution
+  }, [profile?.point, isFirstEntry]); // Depend on profile.point and isFirstEntry
+  
+
+  useEffect(() => {
+    if (currentUser) {
+      const fetchProfile = async () => {
+        try {
+          const docRef = doc(firestoreDB, 'userInfo', currentUser.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setProfile({ id: docSnap.id, ...docSnap.data() });
+          } else {
+            console.log('No such document!');
+          }
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProfile();
+    }
+  }, [currentUser]);
 
   if (loading) {
     return (
@@ -74,19 +124,14 @@ const QrGener = () => {
 
   return (
     <View style={styles.container}>
-      
       <Image source={imageSource} style={styles.logo} />
-      
       <TouchableOpacity onPress={handlePaymentPress} style={styles.paymentButton}>
         <Text style={styles.paymentButtonText}>결제 하기</Text>
       </TouchableOpacity>
 
       <Text style={styles.title}>보유 포인트: {profile?.point}</Text>
-      
       <QRCode value={qrValue} size={200} />
-      
       <Text style={styles.subtitle}>{profile?.nickname}님의 QR 코드입니다.</Text>
-      {/* Display additional user information if needed */}
     </View>
   );
 };
@@ -112,33 +157,30 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     marginBottom: 20,
-    padding:10,
+    padding: 10,
   },
   logo: {
     width: '77%',
     height: '7%',
     marginBottom: 30,
   },
-
   paymentButton: {
-    backgroundColor: '#007bff', // Bootstrap primary blue color
+    backgroundColor: '#007bff',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    elevation: 2, // This adds a slight shadow on Android
-    shadowOpacity: 0.2, // and these lines add shadow on iOS
+    elevation: 2,
+    shadowOpacity: 0.2,
     shadowRadius: 1,
     shadowOffset: { width: 0, height: 1 },
-    marginTop: 20, // Add some space on top of the button
+    marginTop: 20,
   },
   paymentButtonText: {
-    color: '#ffffff', // White text color
+    color: '#ffffff',
     fontSize: 18,
-    fontWeight: '600', // Semi-bold text
+    fontWeight: '600',
     textAlign: 'center',
   },
-
-  // ... other styles ...
 });
 
 export default QrGener;

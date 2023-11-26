@@ -1,8 +1,18 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView,FlatList } from 'react-native';
+import React, { useState,useEffect ,useRef  } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView,FlatList, Linking  } from 'react-native';
  // or another icon library of your choice
 
 const Main = () => {
+  //오늘 날짜 계산
+  const currentDate = new Date();
+  const formattedDate = currentDate.getFullYear() 
+                      + ('0' + (currentDate.getMonth() + 1)).slice(-2) 
+                      + ('0' + currentDate.getDate()).slice(-2);
+
+  
+
+  //행사정보용
+  const [festival_Data, setFestival_Data] = useState([]);
 
   const horizontalData = [
     { id: '8', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
@@ -10,8 +20,6 @@ const Main = () => {
     { id: '10', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
     { id: '11', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
     { id: '12', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
-
-  
   ];
 
   // 수직 스크롤 데이터
@@ -32,26 +40,46 @@ const Main = () => {
       <Text style={styles.gridText}>{item.city}</Text>
     </TouchableOpacity>
   );
-
+  
+  // ?.toISOString().split('T')[0]
   // 수직 스크롤 아이템 렌더링 함수
-  const renderVerticalItem = ({ item }) => (
-    <TouchableOpacity style={styles.gridItem}>
-      <Image source={{ uri: item.u_img }} style={styles.gridImage} />
-      <Text style={styles.gridDateLabel}>
-        {item.timestamp?.toISOString().split('T')[0]}
-      </Text>
-      <Text style={styles.gridRegionLabel}>
-        {item.region} {item.city}
-      </Text>
+  const renderVerticalItem = ({ item }) => {
+
+    const handleLinkPress = () => {
+      const url = `https://www.ktourmap.com/spotDetails.jsp?contentId=${item.contentid}`;
+      Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
+    };
+
+
+    return(
+      <TouchableOpacity style={styles.gridItem} onPress={handleLinkPress}>
+        <Image 
+          source={item.firstimage ? { uri: item.firstimage } : require('../assets/empty_img.png')}
+          style={styles.gridImage} 
+        />
+
+        <Text style={styles.gridDateLabel}>
+          기간: {item.eventstartdate} ~ {item.eventenddate}
+        </Text>
+        
+        <Text style={styles.gridRegionLabel}>
+          {item.title}
+        </Text>
+
+        <Text style={styles.gridPlaceLabel}>
+          장소: {item.addr1}
+        </Text>
+
     </TouchableOpacity>
-  );
+  )
+  };
 
   const HorizontalSection = () => (
     <>
     <View style={styles.actionButton}>
           <Text style={styles.actionText}>Text12</Text>
     </View>
-    <Text style={styles.contentTitle}>Text4</Text>
+    <Text style={styles.contentTitle}> 추천 관광지 </Text>
     <FlatList
       data={horizontalData}
       horizontal={true}
@@ -59,10 +87,37 @@ const Main = () => {
       keyExtractor={(item, index) => item.id + ':' + index}
       style={styles.horizontalList}
     />
-    <Text style={styles.contentTitle}>Text5</Text>
+    <Text style={styles.contentTitle}>주변 행사</Text>
     </>
   );
- 
+
+
+  //축제 관련 Vertical 최신화용
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${process.env.TOUR_API_KEY}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&eventStartDate=${formattedDate}`);
+        const data = await response.json();
+        setFestival_Data(data.response.body.items.item);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+
+  //festival정보 가져왔을때 실행
+  useEffect(() => {
+    console.log(festival_Data);
+    console.log(formattedDate);
+
+  }, [festival_Data]); // festival_Data 상태가 변경될 때마다 실행됩니다.
+
+
   return (
     <View style={styles.screenContainer}>
       {/* 헤더 섹션 */}
@@ -74,24 +129,11 @@ const Main = () => {
         </View>
       </View>
 
-      {/* 수평 메뉴 */}
-      {/* <View style={styles.horizontalMenu}>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Text1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Text2</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Text3</Text>
-        </TouchableOpacity>
-      </View> */}
-     
-      
+
       
   
       <FlatList
-        data={verticalData}
+        data={festival_Data}
         renderItem={renderVerticalItem}
         keyExtractor={(item, index) => item.id + ':' + index}
         numColumns={2}
@@ -106,6 +148,7 @@ const Main = () => {
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
+    color: 'black',
   },
 
   horizontalList: {
@@ -113,6 +156,7 @@ const styles = StyleSheet.create({
   },
   verticalList: {
     flex: 1,
+    
   },
    container: {
     flex: 1,
@@ -151,6 +195,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
     marginTop: 10,
+    color: 'black',
   },
    horizontalMenu: {
     flexDirection: 'row',
@@ -177,6 +222,7 @@ const styles = StyleSheet.create({
   },
   navText: {
     fontSize: 10, 
+    color: 'black',
   },
    scrollViewContainer: {
     alignItems: 'center',
@@ -196,17 +242,27 @@ const styles = StyleSheet.create({
     flex: 1 / 2, 
     aspectRatio: 1, 
     margin: 4, 
+    
   },
   gridImage: {
     width: '100%', 
-    height: '60%', 
+    height: '70%', 
   },
   gridDateLabel: {
     fontSize: 12,
+    color: 'black',
   },
+  
+  gridPlaceLabel: {
+    fontSize: 11,
+    color: 'black',
+    fontWeight: 'bold',
+  },
+
   gridRegionLabel: {
     fontSize: 14, 
     fontWeight: 'bold', 
+    color: 'black',
   },
   flatListContainer: {
     height: 150, 
@@ -215,6 +271,7 @@ const styles = StyleSheet.create({
   gridItemHorizontal: {
     margin: 10, 
     width: 150,
+    
   
   },
   gridImageHorizontal: {
@@ -223,6 +280,7 @@ const styles = StyleSheet.create({
   },
   gridText: {
     textAlign: 'center', 
+    color: 'black',
    
   },
 

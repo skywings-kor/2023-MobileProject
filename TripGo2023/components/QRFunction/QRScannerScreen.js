@@ -32,7 +32,7 @@ function QRScannerScreen() {
             // Start scanning when permission is granted
             setQrvalue('');
           } else {
-            alert('CAMERA permission denied');
+            alert('카메라 권한이 거부되었습니다');
           }
         } catch (err) {
           console.warn('Camera permission error', err);

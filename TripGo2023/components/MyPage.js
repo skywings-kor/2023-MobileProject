@@ -309,6 +309,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     width: '100%',
     alignItems: 'center',
+    
   },
   profileContainer: {
     flexDirection: 'row',
@@ -330,14 +331,17 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
   },
   userPoints: {
     fontSize: 16,
+    color: 'black',
   },
   infoText:{
     fontSize: 16,
     marginBottom:10,
     marginLeft:20,
+    color: 'black',
   },
   optionContainer: {
     flexDirection: 'row',
@@ -349,6 +353,7 @@ const styles = StyleSheet.create({
   optionTitle: {
 
     fontSize: 18,
+    color: 'black',
   },
   button: {
     width: '80%',
@@ -380,13 +385,15 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
+    
   },
   modalText: {
     marginBottom: 15,
     textAlign: "center",
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
   },
   input: {
     height: 40,
