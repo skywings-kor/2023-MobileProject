@@ -204,7 +204,7 @@ const MainScreen = () => {
       {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
       <Stack.Screen name="QR스캔" component={QRScannerScreen} />
 
-      <Stack.Screen name="선택" component={QRScannerScreen} />
+      <Stack.Screen name="선택" component={Option} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />

@@ -1,7 +1,11 @@
 import React, { useState,useEffect ,useRef  } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView,FlatList, Linking  } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView,FlatList, Linking, PermissionsAndroid  } from 'react-native';
 
 import Config from '../API_Config'
+
+import Geolocation from '@react-native-community/geolocation';
+
+import GeolocationPosition from 'react-native-geolocation-service';
 
 const Main = () => {
   //API 호출
@@ -17,6 +21,13 @@ const Main = () => {
 
   //행사정보용
   const [festival_Data, setFestival_Data] = useState([]);
+
+  //주변 행사정보
+  const [nearFestival, setNearFestival] = useState([]);
+
+  //사용자 현재 위치정보용
+  const [location, setLocation] = useState(36.3504,127.3845);
+
 
   const horizontalData = [
     { id: '8', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
@@ -39,9 +50,23 @@ const Main = () => {
 
   const renderHorizontalItem = ({ item }) => (
     <TouchableOpacity style={styles.gridItemHorizontal}>
-      <Image source={{ uri: item.u_img }} style={styles.gridImageHorizontal} />
-      <Text style={styles.gridText}>{item.region}</Text>
-      <Text style={styles.gridText}>{item.city}</Text>
+        <Image 
+          source={item.firstimage ? { uri: item.firstimage } : require('../assets/empty_img.png')}
+          style={styles.gridImageHorizontal} 
+        />
+
+        {/* <Text style={styles.gridText}>
+          기간: {item.eventstartdate} ~ {item.eventenddate}
+        </Text> */}
+        
+        <Text style={styles.gridText}>
+          {item.title}
+        </Text>
+
+        <Text style={styles.gridText}>
+          장소: {item.addr1}
+        </Text>
+
     </TouchableOpacity>
   );
   
@@ -78,20 +103,20 @@ const Main = () => {
   )
   };
 
-  const HorizontalSection = () => (
+  const HorizontalSection = ({}) => (
     <>
     <View style={styles.actionButton}>
           <Text style={styles.actionText}>Text12</Text>
     </View>
-    <Text style={styles.contentTitle}> 추천 관광지 </Text>
+    <Text style={styles.contentTitle}> 내 주변 최신 행사 </Text>
     <FlatList
-      data={horizontalData}
+      data={nearFestival}
       horizontal={true}
       renderItem={renderHorizontalItem}
       keyExtractor={(item, index) => item.id + ':' + index}
       style={styles.horizontalList}
     />
-    <Text style={styles.contentTitle}>주변 행사</Text>
+    <Text style={styles.contentTitle}>전국 운영 중인 행사</Text>
     </>
   );
 
@@ -113,6 +138,53 @@ const Main = () => {
 
     fetchData();
   }, []);
+
+
+
+  
+  async function requestPermissions(){
+    await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );    
+  }
+
+//위치 허락 관련 
+useEffect(() => {
+    requestPermissions()
+    GeolocationPosition.getCurrentPosition(
+        position => {
+          setLocation(position.coords);
+        },
+        error => {
+          console.error(error.code, error.message);
+        },
+        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      );
+
+    // handleCheck()
+})
+
+
+
+  //내 주변 행사 최신화용
+  useEffect(() => {
+    const updateNearFes = async () => {
+      try {
+        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=5&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=D&mapX=127.0748502&mapY=36.7997761&radius=20000&contentTypeId=15`);
+
+        const data = await response.json();
+
+        setNearFestival(data.response.body.items.item);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    updateNearFes();
+    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
+    console.log(nearFestival)
+  }, []);
+
 
 
 
