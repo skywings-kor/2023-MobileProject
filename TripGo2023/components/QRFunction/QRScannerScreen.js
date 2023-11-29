@@ -45,17 +45,9 @@ function QRScannerScreen() {
 
   const onBarcodeScan = (qrvalue) => {
     setQrvalue(qrvalue);
-
-    // You can perform any action with the scanned QR code here
-    Alert.alert('QR Code', qrvalue, [
-      {
-        text: 'OK',
-        onPress: () => {
-          navigation.navigate('QR결재', { qrValue: qrvalue });
-          setQrvalue('');
-        },
-      },
-    ]);
+    navigation.navigate('QR결재', { qrValue: qrvalue });
+    setQrvalue('');
+ 
   };
 
   return (

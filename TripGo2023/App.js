@@ -26,6 +26,8 @@ import Payment from "./components/QRFunction/Payment"
 import QrGener from "./components/QRFunction/QrGener"
 import QRScannerScreen from "./components/QRFunction/QRScannerScreen"
 
+import AddAttractionScreen from "./components/AddPlace/AddAttraction"
+
 
 
 import React, {useState} from 'react';
@@ -111,7 +113,7 @@ const App =()=>{
           />
 
           <Tab.Screen
-            name="QR결재"
+            name="QR결제"
             component={QrGener}
             options={{
               tabBarIcon: ({ color, size }) => (
@@ -137,7 +139,7 @@ const App =()=>{
           />
 
           <Tab.Screen
-            name="관광인증"
+            name="관광인증/등록"
             component={Camera}
             options={{
               tabBarIcon: ({ color, size }) => (
@@ -198,13 +200,12 @@ const MainScreen = () => {
       <Stack.Screen name="상세페이지" component={detailPD} />
 
       <Stack.Screen name="리뷰등록" component={Review} />
-
+        <Stack.Screen name="관광지등록" component={AddAttractionScreen}/>
       <Stack.Screen name="특산물추가" component={productAdd} />
       <Stack.Screen name="QR결재" component={Payment} />
       {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
       <Stack.Screen name="QR스캔" component={QRScannerScreen} />
-
-      <Stack.Screen name="선택" component={QRScannerScreen} />
+      <Stack.Screen name="선택" component={Option} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />
