@@ -25,11 +25,13 @@ import Option from "./components/Camera/Option"
 import Payment from "./components/QRFunction/Payment"
 import QrGener from "./components/QRFunction/QrGener"
 import QRScannerScreen from "./components/QRFunction/QRScannerScreen"
-
+import PaymentHistory from "./components/QRFunction/PaymentHistory";
+import SellHistoryScreen from "./components/QRFunction/SellHistory";
 
 
 import React, {useState} from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -201,10 +203,11 @@ const MainScreen = () => {
 
       <Stack.Screen name="특산물추가" component={productAdd} />
       <Stack.Screen name="QR결재" component={Payment} />
+      <Stack.Screen name="판매내역" component={SellHistoryScreen} />
       {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
       <Stack.Screen name="QR스캔" component={QRScannerScreen} />
-
-      <Stack.Screen name="선택" component={QRScannerScreen} />
+      <Stack.Screen name="결제내역" component ={PaymentHistory}/>
+      <Stack.Screen name="선택" component={Option} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />

@@ -2,12 +2,12 @@ import React,  { useState, useEffect }  from 'react';
 import {  Modal, TextInput,View, Text, StyleSheet, Image, TouchableOpacity, Switch, Alert } from 'react-native';
 import { updateDoc,serverTimestamp,firestoreDB, firebaseAuth,collection, doc, setDoc, getDoc, query, orderBy, limit, getDocs, analytics, storage, ref, uploadBytes, getDownloadURL ,onAuthStateChanged, addDoc } from '../firebaseConfig';
 import { Picker } from '@react-native-picker/picker';
-
+import { useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 
 const MyPage = () => { 
-
+  const navigation = useNavigation();
   //이미지 URL
   const [imageURL,setimageURL] = useState("");
 
@@ -195,7 +195,14 @@ const MyPage = () => {
   const handleCheckReviews = () => {
     // 리뷰 확인 로직 .
   };
-
+  const handlePaymentHistory = () => {
+    // 결제 내역 로직 .
+    navigation.navigate('결제내역');
+  };
+  const handleSellHistory = () => {
+    // 판매 내역 로직 .
+    navigation.navigate('판매내역');
+  };
   const handleDeleteAccount = () => {
     // 회원 탈퇴 로직 .
    
@@ -241,6 +248,12 @@ const MyPage = () => {
         <TouchableOpacity style={styles.button} onPress={handleCheckReviews}>
             <Text style={styles.buttonText}>내가 작성한 리뷰 확인</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handlePaymentHistory}>
+            <Text style={styles.buttonText}>결제 내역</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleSellHistory}>
+            <Text style={styles.buttonText}>판매 내역</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleInfoChange}>
             <Text style={styles.buttonText}>사용자 정보 변경</Text>
         </TouchableOpacity>
@@ -251,6 +264,7 @@ const MyPage = () => {
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Text style={styles.buttonText}>로그아웃</Text>
         </TouchableOpacity>
+
       </View>
        {/* Modal for editing user information */}
        <Modal

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Image, TextInput, Button, Text, ScrollView, TouchableOpacity } from 'react-native';
 
 const ReviewScreen = ({ route, navigation }) => {
-  const { photoUri } = route.params;
+  const { photoUri,location } = route.params;
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(null);
   const [satisfied, setSatisfied] = useState(null);
@@ -10,7 +10,7 @@ const ReviewScreen = ({ route, navigation }) => {
   const categories = ['음식', '환경', '이벤트'];
 
   const submitReview = () => {
-    console.log(reviewText, rating, satisfied,);
+    console.log(reviewText, rating, satisfied,location);
     navigation.navigate('main');
   };
 
