@@ -74,14 +74,23 @@ const QrGener = () => {
   
   useEffect(() => {
     if (profile && previousPoint !== null && !isFirstEntry) {
-      const pointsDifference = previousPoint - profile.point;
-      if (profile.point !== previousPoint) {
+      const pointsDifference = profile.point - previousPoint;
+  
+      if (pointsDifference < 0) {
+        // Points decreased, indicating a payment
         Alert.alert(
           '결제 성공', 
-          `결제가 성공적으로 이루어졌습니다. 사용 포인트: ${pointsDifference}포인트`,
+          `결제가 성공적으로 이루어졌습니다. 사용 포인트: ${Math.abs(pointsDifference)}포인트`,
+        );
+      } else if (pointsDifference > 0) {
+        // Points increased, indicating a refund
+        Alert.alert(
+          '환불 성공',
+          `환불이 성공적으로 이루어졌습니다. 환불 포인트: ${pointsDifference}포인트`,
         );
       }
-      setPreviousPoint(profile?.point); // Update previousPoint on subsequent renders
+  
+      setPreviousPoint(profile?.point); // Update previousPoint for the next comparison
     }
     setIsFirstEntry(false); // Set isFirstEntry to false after first execution
   }, [profile?.point, isFirstEntry]);

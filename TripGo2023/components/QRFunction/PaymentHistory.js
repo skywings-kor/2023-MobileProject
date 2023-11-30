@@ -26,9 +26,10 @@ const PaymentHistoryScreen = () => {
 
   const renderTransaction = ({ item }) => (
     <View style={styles.transactionItem}>
-      <Text style={styles.transactionType}>{item.type === 0 ? '결제' : '환불'}</Text>
-      <Text style={styles.transactionPoints}>{item.amount} points</Text>
-      <Text style={styles.transactionPoints}>{item.randomNumber} </Text>
+      <Text style={styles.transactionType}>{item.type === 0 ? '결제' : '환불'},</Text>
+      <Text style={styles.transactionPoints}>{item.sellerNickname},</Text>
+      <Text style={styles.transactionPoints}>{item.amount} points,</Text>
+      <Text style={styles.transactionPoints}>{item.randomNumber} ,</Text>
       <Text style={styles.transactionDate}>{item.timestamp.toDate().toISOString().split('T')[0]}</Text>
     </View>
   );

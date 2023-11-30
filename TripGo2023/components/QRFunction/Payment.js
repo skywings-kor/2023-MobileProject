@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert ,StyleSheet} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { firestoreDB, doc, updateDoc, addDoc, collection,firebaseAuth } from '../../firebaseConfig'; // Ensure these are correctly imported from your Firebase setup file
+import { firestoreDB, doc, updateDoc, addDoc, collection,firebaseAuth ,getDoc} from '../../firebaseConfig'; // Ensure these are correctly imported from your Firebase setup file
 
 const PaymentScreen = ({ route }) => {
   const { qrValue } = route.params;
@@ -35,7 +35,15 @@ const PaymentScreen = ({ route }) => {
   
       try {
         await updateDoc(userDocRef, { point: updatedPoints });
-  
+            // Fetch buyer's nickname
+        const buyerDocRef = doc(firestoreDB, 'userInfo', uid);
+        const buyerDoc = await getDoc(buyerDocRef);
+        const buyerNickname = buyerDoc.exists() ? buyerDoc.data().nickname : 'Unknown Buyer';
+
+        // Fetch seller's nickname
+        const sellerDocRef = doc(firestoreDB, 'userInfo', seller.uid);
+        const sellerDoc = await getDoc(sellerDocRef);
+        const sellerNickname = sellerDoc.exists() ? sellerDoc.data().nickname : 'Unknown Seller';
         const sellerUid = seller.uid // Replace with actual seller UID
         // Create a reference to the buyer's bill subcollection
         const buyerBillRef = collection(firestoreDB, 'User_Receipt', uid, 'bill');
@@ -46,6 +54,7 @@ const PaymentScreen = ({ route }) => {
         const buyerReceiptData = {
           buyerUid: uid,
           sellerUid: sellerUid,
+          sellerNickname: sellerNickname,
           amount: parsedAmount,
           timestamp: paymentTimestamp,
           type: 0, // 0 for payment
@@ -55,6 +64,7 @@ const PaymentScreen = ({ route }) => {
         const sellerReceiptData = {
           buyerUid: uid,
           sellerUid: sellerUid,
+          buyerNickname:buyerNickname,
           amount: parsedAmount,
           timestamp: paymentTimestamp,
           randomNumber: randomNumber,

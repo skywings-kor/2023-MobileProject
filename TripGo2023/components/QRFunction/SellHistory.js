@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList ,TouchableOpacity,TextInput,Alert} from 'react-native';
 import { firestoreDB, collection, getDoc,getDocs, firebaseAuth ,doc,updateDoc} from '../../firebaseConfig'; // Ensure these are correctly imported
-
+import { useFocusEffect } from '@react-navigation/native';
 const SellHistoryScreen = () => {
   const [sellHistory, setSellHistory] = useState([]);
   const [refundRandomNumber, setRefundRandomNumber] = useState('');
@@ -27,33 +27,45 @@ const SellHistoryScreen = () => {
 
   const processRefund = async (item) => {
     if (refundRandomNumber.toString() === item.randomNumber.toString()) {
-      // Update transaction status to '환불'
-      const transactionRef = doc(firestoreDB, 'User_Receipt', item.sellerUid, 'sellbill', item.id);
-      
+      // Update transaction status to '환불' in seller's record
+      const sellerTransactionRef = doc(firestoreDB, 'User_Receipt', item.sellerUid, 'sellbill', item.id);
+      await updateDoc(sellerTransactionRef, { type: 1 }); // 1 for refund
+  
       // Update buyer's points
       const buyerRef = doc(firestoreDB, 'userInfo', item.buyerUid);
       const buyerDoc = await getDoc(buyerRef);
-
       if (buyerDoc.exists()) {
         const updatedPoints = buyerDoc.data().point + item.amount;
-        await updateDoc(transactionRef, { type: 1 }); // 1 for refund
         await updateDoc(buyerRef, { point: updatedPoints });
-        console.log('good')
       }
-
+  
+      // Update transaction status to '환불' in buyer's record
+      const buyerBillRef = collection(firestoreDB, 'User_Receipt', item.buyerUid, 'bill');
+      const buyerBillSnapshot = await getDocs(buyerBillRef);
+      const buyerTransactionDoc = buyerBillSnapshot.docs.find(doc => doc.data().randomNumber === item.randomNumber);
+  
+      if (buyerTransactionDoc) {
+        const buyerTransactionRef = doc(firestoreDB, 'User_Receipt', item.buyerUid, 'bill', buyerTransactionDoc.id);
+        await updateDoc(buyerTransactionRef, { type: 1 }); // 1 for refund
+      }
+  
       Alert.alert('환불 성공', 'Refund successful.');
-      fetchSellHistory(); 
-      // Refresh the sell history
-      // (you might need a separate function or additional logic to refresh the data)
+      fetchSellHistory();
     } else {
       Alert.alert('환불 실패', 'Incorrect random number.');
     }
   };
-
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchSellHistory();
+    }, [])
+  );
   
   const renderTransaction = ({ item }) => (
     <View style={styles.transactionItem}>
       <Text style={styles.transactionType}>{item.type === 0 ? '판매' : '환불'}</Text>
+      <Text style={styles.transactionPoints}>{item.buyerNickname},</Text>
       <Text style={styles.transactionPoints}>{item.amount} points</Text>
       <Text style={styles.transactionRandomNumber}>{item.randomNumber}</Text>
       <Text style={styles.transactionDate}>{item.timestamp.toDate().toISOString().split('T')[0]}</Text>
