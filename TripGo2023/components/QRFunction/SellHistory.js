@@ -64,13 +64,15 @@ const SellHistoryScreen = () => {
   
   const renderTransaction = ({ item }) => (
     <View style={styles.transactionItem}>
-      <Text style={styles.transactionType}>{item.type === 0 ? '판매' : '환불'}</Text>
-      <Text style={styles.transactionPoints}>{item.buyerNickname},</Text>
-      <Text style={styles.transactionPoints}>{item.amount} points</Text>
-      <Text style={styles.transactionRandomNumber}>{item.randomNumber}</Text>
-      <Text style={styles.transactionDate}>{item.timestamp.toDate().toISOString().split('T')[0]}</Text>
-      {item.type === 0 && ( // Show refund button only for sales
-      <TouchableOpacity onPress={() => processRefund(item)}>
+      <View style={styles.transactionDetails}>
+        <Text style={styles.transactionType}>{item.type === 0 ? '판매' : '환불'}</Text>
+        <Text style={styles.transactionPoints}>{item.buyerNickname}</Text>
+        <Text style={styles.transactionPoints}>{item.amount} points</Text>
+        <Text style={styles.transactionRandomNumber}>{item.randomNumber}</Text>
+        <Text style={styles.transactionDate}>{item.timestamp.toDate().toISOString().split('T')[0]}</Text>
+      </View>
+      {item.type === 0 && (
+        <TouchableOpacity onPress={() => processRefund(item)} style={styles.refundButton}>
           <Text style={styles.refundButtonText}>환불</Text>
         </TouchableOpacity>
       )}
@@ -107,27 +109,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  refundButton: {
+    // 환불 버튼 스타일 추가
+    padding: 10,
+    backgroundColor: 'red',
+    borderRadius: 5,
+  },
   transactionItem: {
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#e1e1e1',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+  },
+  transactionDetails: {
+    flex: 1, // 거래 내역이 화면 대부분을 차지하도록 설정
   },
   transactionType: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
+    marginBottom: 5, // 추가된 여백
   },
   transactionPoints: {
-    fontSize: 16,
-  },
-  transactionRandomNumber: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 14, // 텍스트 크기 감소
+    marginBottom: 5, // 추가된 여백
   },
   transactionDate: {
-    fontSize: 14,
+    fontSize: 12, // 텍스트 크기 감소
     color: '#666',
   },
   input: {
@@ -138,7 +147,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   refundButtonText: {
-    color: 'red',
+    color: 'white',
     fontWeight: 'bold',
   },
 });

@@ -26,10 +26,10 @@ const PaymentHistoryScreen = () => {
 
   const renderTransaction = ({ item }) => (
     <View style={styles.transactionItem}>
-      <Text style={styles.transactionType}>{item.type === 0 ? '결제' : '환불'},</Text>
-      <Text style={styles.transactionPoints}>{item.sellerNickname},</Text>
-      <Text style={styles.transactionPoints}>{item.amount} points,</Text>
-      <Text style={styles.transactionPoints}>{item.randomNumber} ,</Text>
+      <Text style={styles.transactionType}>{item.type === 0 ? '결제' : '환불'}</Text>
+      <Text style={styles.transactionPoints}>{item.sellerNickname}</Text>
+      <Text style={styles.transactionPoints}>{item.amount} points</Text>
+      <Text style={styles.transactionPoints}>{item.randomNumber} </Text>
       <Text style={styles.transactionDate}>{item.timestamp.toDate().toISOString().split('T')[0]}</Text>
     </View>
   );
@@ -61,19 +61,22 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#e1e1e1',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    // flexDirection 변경: 'row' -> 'column'
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
   transactionType: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
+    marginBottom: 5, // 추가된 여백
   },
   transactionPoints: {
-    fontSize: 16,
+    fontSize: 14, // 텍스트 크기 감소
+    marginBottom: 5, // 추가된 여백
   },
   transactionDate: {
-    fontSize: 14,
+    fontSize: 12, // 텍스트 크기 감소
     color: '#666',
   },
 });
