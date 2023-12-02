@@ -20,6 +20,7 @@ import Map from "./components/Map/Map"
 import Camera from "./components/Camera/Camera"
 import Review from "./components/Camera/Review"
 import Option from "./components/Camera/Option"
+import AddAttractionScreen from "./components/AddPlace/AddAttraction"
 
 //QR관련
 import Payment from "./components/QRFunction/Payment"
@@ -27,6 +28,7 @@ import QrGener from "./components/QRFunction/QrGener"
 import QRScannerScreen from "./components/QRFunction/QRScannerScreen"
 import PaymentHistory from "./components/QRFunction/PaymentHistory";
 import SellHistoryScreen from "./components/QRFunction/SellHistory";
+
 
 
 import React, {useState} from 'react';
@@ -156,11 +158,9 @@ const App =()=>{
         </Tab.Navigator>
       ) : (
         <Stack.Navigator>
-          <Stack.Screen
-            name="Login"
-            component={(props) => <Login {...props} handleLogin={handleLogin} />}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Login" options={{ headerShown: false }}>
+            {props => <Login {...props} handleLogin={handleLogin} />}
+          </Stack.Screen>
           <Stack.Screen
             name="SignUp"
             component={SignUp}
@@ -200,6 +200,7 @@ const MainScreen = () => {
       <Stack.Screen name="상세페이지" component={detailPD} />
 
       <Stack.Screen name="리뷰등록" component={Review} />
+      <Stack.Screen name="관광지등록" component={AddAttractionScreen} />
 
       <Stack.Screen name="특산물추가" component={productAdd} />
       <Stack.Screen name="QR결재" component={Payment} />
