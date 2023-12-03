@@ -70,6 +70,9 @@ const CameraScreen = () => {
     // Ensure that you're using `photo.path` instead of `photo.uri`
     // Pass photo and location to the next screen or save it
     navigation.navigate('선택', { photoUri: photo.uri, location });
+
+    //테스트용도
+    // navigation.navigate('리뷰등록', { location });
   };
 
   const retakePicture = () => {

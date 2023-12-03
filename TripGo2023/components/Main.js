@@ -167,7 +167,7 @@ useEffect(() => {
   useEffect(() => {
     const updateNearFes = async () => {
       try {
-        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=5&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=D&mapX=127.0748502&mapY=36.7997761&radius=20000&contentTypeId=15`);
+        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=5&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=D&mapX=${location.longitude}&mapY=${location.latitude}&radius=20000&contentTypeId=15`);
 
         const data = await response.json();
 
