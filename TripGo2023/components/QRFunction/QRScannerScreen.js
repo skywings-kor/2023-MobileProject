@@ -13,10 +13,9 @@ import { CameraScreen } from 'react-native-camera-kit';
 import { useNavigation } from '@react-navigation/native';
 function QRScannerScreen() {
   const [qrvalue, setQrvalue] = useState('');
+  const [isScannerActive, setIsScannerActive] = useState(false);
   const navigation = useNavigation();
   useEffect(() => {
-    // Reset scanned state on component mount
-    setQrvalue('');
 
     const requestCameraPermission = async () => {
       if (Platform.OS === 'android') {
@@ -40,37 +39,47 @@ function QRScannerScreen() {
       }
     };
 
+    const unsubscribe = navigation.addListener('focus', () => {
+      setQrvalue('');
+      setIsScannerActive(true); // 화면 포커스시 스캐너 활성화
+    });
+
+    const blurUnsubscribe = navigation.addListener('blur', () => {
+      setIsScannerActive(false); // 화면 포커스를 잃을 때 스캐너 비활성화
+    });
+
     requestCameraPermission();
-  }, []);
+    return () => {
+      unsubscribe();
+      blurUnsubscribe();
+    };
+  }, [navigation]);
+
 
   const onBarcodeScan = (qrvalue) => {
     setQrvalue(qrvalue);
-
-    // You can perform any action with the scanned QR code here
-    Alert.alert('QR Code', qrvalue, [
-      {
-        text: 'OK',
-        onPress: () => {
-          navigation.navigate('QR결재', { qrValue: qrvalue });
-          setQrvalue('');
-        },
-      },
-    ]);
+    navigation.navigate('QR결재', { qrValue: qrvalue });
+    setQrvalue('');
+ 
   };
+
+  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <CameraScreen
-          showFrame={false}
-          scanBarcode={true}
-          laserColor={'blue'}
-          frameColor={'yellow'}
-          colorForScannerFrame={'black'}
-          onReadCode={(event) =>
-            onBarcodeScan(event.nativeEvent.codeStringValue)
-          }
-        />
+        {isScannerActive && ( // 스캐너가 활성화되었을 때만 CameraScreen을 렌더링
+          <CameraScreen
+            showFrame={false}
+            scanBarcode={true}
+            laserColor={'blue'}
+            frameColor={'yellow'}
+            colorForScannerFrame={'black'}
+            onReadCode={(event) =>
+              onBarcodeScan(event.nativeEvent.codeStringValue)
+            }
+          />
+        )}
       </View>
     </SafeAreaView>
   );

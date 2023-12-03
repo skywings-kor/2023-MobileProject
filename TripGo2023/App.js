@@ -26,6 +26,12 @@ import Payment from "./components/QRFunction/Payment"
 import QrGener from "./components/QRFunction/QrGener"
 import QRScannerScreen from "./components/QRFunction/QRScannerScreen"
 
+//챗봇관련
+import ChatBot from "./components/ChatBot/Chat_Page"
+
+//유저 개인정보
+import PaymentHis from "./components/User_Personal/PaymentHistory"
+import SellHis from "./components/User_Personal/SellHistory"
 
 
 import React, {useState} from 'react';
@@ -201,10 +207,18 @@ const MainScreen = () => {
 
       <Stack.Screen name="특산물추가" component={productAdd} />
       <Stack.Screen name="QR결재" component={Payment} />
+
       {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
+
       <Stack.Screen name="QR스캔" component={QRScannerScreen} />
 
       <Stack.Screen name="선택" component={Option} />
+
+      <Stack.Screen name="고객상담" component={ChatBot} />
+
+      <Stack.Screen name="결제내역" component={PaymentHis} />
+
+      <Stack.Screen name="판매내역" component={SellHis} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Image, TextInput, Button, Text, ScrollView, TouchableOpacity } from 'react-native';
 
 const ReviewScreen = ({ route, navigation }) => {
-  const { photoUri } = route.params;
+  const { photoUri,location } = route.params;
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(null);
   const [satisfied, setSatisfied] = useState(null);
@@ -10,7 +10,7 @@ const ReviewScreen = ({ route, navigation }) => {
   const categories = ['음식', '환경', '이벤트'];
 
   const submitReview = () => {
-    console.log(reviewText, rating, satisfied,);
+    console.log(reviewText, rating, satisfied,location);
     navigation.navigate('main');
   };
 
@@ -32,7 +32,7 @@ const ReviewScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text>리뷰를 작성해 주세요.</Text>
       <Image source={{ uri: photoUri }} style={styles.image} />
-      <ScrollView horizontal={true} style={styles.optionsContainer}>
+      {/* <ScrollView horizontal={true} style={styles.optionsContainer}>
         <TouchableOpacity
           style={[styles.optionButton, rating === 'good' && styles.selectedOptionButton]}
           onPress={() => toggleRating('good')}
@@ -57,7 +57,7 @@ const ReviewScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
- 
+  */}
       <TextInput
         style={styles.input}
         onChangeText={setReviewText}

@@ -105,9 +105,6 @@ const Main = () => {
 
   const HorizontalSection = ({}) => (
     <>
-    <View style={styles.actionButton}>
-          <Text style={styles.actionText}>Text12</Text>
-    </View>
     <Text style={styles.contentTitle}> 내 주변 최신 행사 </Text>
     <FlatList
       data={nearFestival}
@@ -162,7 +159,7 @@ useEffect(() => {
       );
 
     // handleCheck()
-})
+},[])
 
 
 
@@ -181,8 +178,6 @@ useEffect(() => {
     };
 
     updateNearFes();
-    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
-    console.log(nearFestival)
   }, []);
 
 

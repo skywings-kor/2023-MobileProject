@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert ,StyleSheet} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { updateDoc, firestoreDB, doc } from '../../firebaseConfig';
+import { firestoreDB, doc, updateDoc, addDoc, collection,firebaseAuth ,getDoc} from '../../firebaseConfig'; // Ensure these are correctly imported from your Firebase setup file
 
 const PaymentScreen = ({ route }) => {
   const { qrValue } = route.params;
@@ -10,35 +10,82 @@ const PaymentScreen = ({ route }) => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [isValidAmount, setIsValidAmount] = useState(true);
 
+  const generateRandomNumber = ()=> {
+    const min = 1000;
+    const max = 9999;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
+  const randomNumber = generateRandomNumber();
+  
+
   const handlePayment = async () => {
-    
-    const uid = qrData.userId;
+    const uid = qrData.userId; // Buyer's UID
     const userPoints = qrData.points;
-    const qrEntryTime = new Date(qrData.entryTime); // Convert QR entryTime to Date object
-    const currentTime = new Date(); // Get current time
-    const timeDifference = currentTime - qrEntryTime; // Calculate time difference in milliseconds
+    const qrEntryTime = new Date(qrData.entryTime);
+    const currentTime = new Date();
+    const timeDifference = currentTime - qrEntryTime;
+    const seller= firebaseAuth.currentUser; 
 
     const parsedAmount = parseFloat(paymentAmount);
-
-    // Check if the QR code was generated within the last 3 minutes and the payment amount is valid
+  
     if (timeDifference <= 180000 && timeDifference >= 0 && parsedAmount <= userPoints && parsedAmount > 0) {
       const updatedPoints = userPoints - parsedAmount;
-
-      // Update user document
       const userDocRef = doc(firestoreDB, 'userInfo', uid);
+  
       try {
         await updateDoc(userDocRef, { point: updatedPoints });
-        Alert.alert('결제 성공');
-        navigation.navigate('main'); // Replace 'main' with the actual route you wish to navigate to
+            // Fetch buyer's nickname
+        const buyerDocRef = doc(firestoreDB, 'userInfo', uid);
+        const buyerDoc = await getDoc(buyerDocRef);
+        const buyerNickname = buyerDoc.exists() ? buyerDoc.data().nickname : 'Unknown Buyer';
+
+        // Fetch seller's nickname
+        const sellerDocRef = doc(firestoreDB, 'userInfo', seller.uid);
+        const sellerDoc = await getDoc(sellerDocRef);
+        const sellerNickname = sellerDoc.exists() ? sellerDoc.data().nickname : 'Unknown Seller';
+        const sellerUid = seller.uid // Replace with actual seller UID
+        // Create a reference to the buyer's bill subcollection
+        const buyerBillRef = collection(firestoreDB, 'User_Receipt', uid, 'bill');
+        // If necessary, also create a reference to the seller's sellbill subcollection
+        const sellerSellBillRef = collection(firestoreDB, 'User_Receipt', sellerUid, 'sellbill');
+  
+        const paymentTimestamp = currentTime; // Or firebase.firestore.Timestamp.fromDate(new Date())
+        const buyerReceiptData = {
+          buyerUid: uid,
+          sellerUid: sellerUid,
+          sellerNickname: sellerNickname,
+          amount: parsedAmount,
+          timestamp: paymentTimestamp,
+          type: 0, // 0 for payment
+          randomNumber: randomNumber
+        };
+        // Similarly, create a data object for the seller's receipt
+        const sellerReceiptData = {
+          buyerUid: uid,
+          sellerUid: sellerUid,
+          buyerNickname:buyerNickname,
+          amount: parsedAmount,
+          timestamp: paymentTimestamp,
+          randomNumber: randomNumber,
+          type: 0 // 0 for payment
+        };
+  
+        // Add the buyer's receipt to their bill subcollection
+        await addDoc(buyerBillRef, buyerReceiptData);
+        // If necessary, add the seller's receipt to their sellbill subcollection
+        await addDoc(sellerSellBillRef, sellerReceiptData);
+  
+        Alert.alert('결제 성공', 'Payment was successful.');
+        navigation.goBack(); // Or navigate to the desired screen
       } catch (error) {
-        console.error('Error updating points:', error);
-        Alert.alert('Error', 'An error occurred while updating the points.');
+        console.error('Error updating points or creating receipt:', error);
+        Alert.alert('Error', 'An error occurred while processing the payment.');
       }
     } else {
-      // Provide feedback on why the payment was invalid
-      const errorMessage = timeDifference > 180000 ?
-        'QR code has expired. Please generate a new code.' :
-        'Enter an amount less than or equal to your points and that is a positive number.';
+      const errorMessage = timeDifference > 180000
+        ? 'QR code has expired. Please generate a new code.'
+        : 'Enter an amount less than or equal to your points and that is a positive number.';
       Alert.alert('Payment Invalid', errorMessage);
       setIsValidAmount(false);
     }
@@ -64,7 +111,7 @@ const PaymentScreen = ({ route }) => {
       
       {!isValidAmount && (
         <Text style={styles.errorText}>
-          Payment invalid. Please ensure the QR code is within 3 minutes old and the payment amount does not exceed your points.
+         "결제가 유효하지 않습니다. QR 코드가 생성된 지 3분 이내인지, 그리고 결제 금액이 포인트를 초과하지 않는지 확인해주세요."
         </Text>
       )}
       

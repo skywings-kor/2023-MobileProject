@@ -8,7 +8,7 @@ import GeolocationPosition from 'react-native-geolocation-service';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from "@react-native-picker/picker";
 
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import { serverTimestamp,firestoreDB, firebaseAuth,collection, doc, setDoc, getDoc, query, orderBy, limit, getDocs, analytics, storage, ref, uploadBytes, getDownloadURL ,onAuthStateChanged, addDoc } from '../../firebaseConfig';
 
 import Config from '../../API_Config'
@@ -302,7 +302,9 @@ const Map=()=>{
 
     const mapRef = useRef(null);
 
-
+    //Marker용
+    const [markerModalVisible, setmarkerModalVisible] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
 
 
@@ -428,7 +430,7 @@ const Map=()=>{
           );
 
         // handleCheck()
-    })
+    },[])
 
 
     //좌표 값에 들어있는 것이 바뀌는 경우를 감지했을 때, 작동되도록(마커찍는것을)
@@ -447,6 +449,33 @@ const Map=()=>{
         longitudeDelta: 0.05,
     });
     
+    //이미지 URL 컨트롤
+    const handleCalloutPress = (imageUrl) => {
+      setSelectedImageUrl(imageUrl);
+      setmarkerModalVisible(true);
+      console.log(markerModalVisible)
+      console.log(imageUrl)
+    };
+
+    //이미지 모달(팝업창 관련 기능)
+    const ImageModal = () => (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={markerModalVisible}
+        onRequestClose={() => {
+          setmarkerModalVisible(false);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Image source={selectedImageUrl ? { uri: selectedImageUrl } : require('../../assets/empty_img.png')} style={styles.modalImage} />
+            <Button title="닫기" onPress={() => setmarkerModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
+    );
+
 
     // festivalData가 업데이트 되면 map에 마커로 표시
     const renderMarkers = () => {
@@ -461,7 +490,18 @@ const Map=()=>{
             }}
             title={place.title}
             description={place.addr1}
-          />
+          >
+            
+
+        <Callout onPress={() => handleCalloutPress(place.firstimage)}>
+          <Text style={styles.calloutTitle}>{place.title}</Text>
+          <Text> {place.addr1} </Text>
+        </Callout>
+
+          </Marker>
+
+            
+
         ));
 
         console.log(festival_Data)
@@ -473,6 +513,7 @@ const Map=()=>{
     
     return(
       <View style={styles.container}>
+        
         <MapView
           ref={mapRef}
           region={mapRegion}
@@ -480,8 +521,10 @@ const Map=()=>{
         >
           {renderMarkers()}
         </MapView>
-
-
+        <View>
+          <ImageModal />
+        </View>
+        
       <TouchableOpacity style={styles.filterButton} onPress={handleFilterButtonClick}>
         <Text style={styles.filterButtonText}>위치 필터 기능</Text>
       </TouchableOpacity>
@@ -489,6 +532,8 @@ const Map=()=>{
       <TouchableOpacity style={styles.nowPosButton} onPress={handleNowPosition}>
         <Image source={require("../../assets/now_position_Icon.png")} style={styles.nowposIcon} /> 
       </TouchableOpacity>
+
+
 
       <Modal
         animationType="slide"
@@ -676,5 +721,36 @@ const styles = StyleSheet.create({
       color: 'white',
       fontWeight: 'bold',
     },
+    calloutView: {
+      width: 100,
+      height: 100,
+      // Callout 뷰 스타일
+    },
+    calloutImage: {
+      width: 50,
+      height: 50,
+      // 이미지 스타일
+    },
+    calloutTitle: {
+      color: 'black',
+      fontWeight: 'bold',
+      // 제목 스타일
+    },
+    calloutDescription: {
+      color: 'black',
+      fontWeight: 'bold',
+      // 설명 스타일
+    },
+    modalImage: {
+      width: 300,
+      height: 300,
+      // 이미지 스타일
+    },
+    modalView:{
+      backgroundColor: 'white',
+      padding: 16,
+      borderRadius: 8,
+    },
+    
   });
   
