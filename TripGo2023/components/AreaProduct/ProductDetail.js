@@ -1,12 +1,14 @@
 import React, { useState, useEffect  } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { firebaseAuth, firestoreDB, doc, deleteDoc, getDoc } from '../../firebaseConfig'; // Import necessary Firebase modules
+import { firebaseAuth, firestoreDB, doc, deleteDoc, getDoc,setDoc } from '../../firebaseConfig'; // Import necessary Firebase modules
+import { useNavigation } from '@react-navigation/native';
 
 const ProductDetail = ({ route, navigation }) => {
   // Extract the product data from the route params
-  const { product } = route.params;
+  const navigation2 = useNavigation();
+  const { product, store } = route.params;
   const currentUser = firebaseAuth.currentUser; // Get the current user
-
+ 
   const [address, setAddress] = useState('');
   const [points, setPoints] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -71,22 +73,25 @@ const ProductDetail = ({ route, navigation }) => {
 
 
   const handleRemoveProduct = async () => {
-    if (currentUser && currentUser.uid === product.OwnerUID) {
-      // User is the owner, delete the product from Firestore
-      try {
-        const productRef = doc(firestoreDB, 'Products', product.id);
-        await deleteDoc(productRef);
-        alert('정상적으로 상품이 삭제되었습니다.');
-        // You can navigate back to the store detail screen or take appropriate action here
-      } catch (error) {
-        console.error('Error removing product: ', error);
-      }
-    } else {
-      // User is not the owner, show an error message or take appropriate action
-      alert('해당 UID는 삭제할 권한이 없습니다.');
+    try {
+      const productId = product.id;
+      const storeId = store.id;
+  
+      // Construct the path to the specific product document
+      const productRef = doc(firestoreDB, 'Stores', storeId, 'products', productId);
+  
+      // Directly delete the product document
+      await deleteDoc(productRef);
+      
+      // Provide feedback to the user
+      alert('상품이 정상적으로 삭제되었습니다.');
+      navigation2.navigate('지역특산품')
+  
+    } catch (error) {
+      console.error('상품 삭제 중 오류 발생: ', error);
+      alert('상품 삭제 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
     }
   };
-
 
 
   return (

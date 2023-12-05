@@ -45,8 +45,10 @@ const StoreDetailScreen = ({ route }) => {
   };
 
   const handleProductPress = (product) => {
-    // Navigate to the product detail screen with the selected product
-    navigation.navigate('상품상세', { product });
+    // Navigate to the product detail screen with the selected product and store ID
+
+    navigation.navigate('상품상세', { product, store });
+
   };
 
   return (
