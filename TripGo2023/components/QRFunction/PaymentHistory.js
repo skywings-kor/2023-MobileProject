@@ -1,27 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { firestoreDB, collection, query, where, getDocs,firebaseAuth } from '../../firebaseConfig'; // Ensure these are correctly imported
+import { firestoreDB, collection, query, where, getDocs,firebaseAuth,onSnapshot } from '../../firebaseConfig'; // Ensure these are correctly imported
 
 const PaymentHistoryScreen = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   useEffect(() => {
-    const fetchPaymentHistory = async () => {
-      const uid = firebaseAuth.currentUser; // Replace with the user's UID
-      const billRef = collection(firestoreDB, 'User_Receipt', uid.uid, 'bill');
+    const uid = firebaseAuth.currentUser; // 사용자 UID 사용
+    const billRef = collection(firestoreDB, 'User_Receipt', uid.uid, 'bill');
 
-      try {
-        const querySnapshot = await getDocs(billRef);
-        const history = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setPaymentHistory(history);
-      } catch (error) {
-        console.error('Error fetching payment history:', error);
-      }
-    };
+    const unsubscribe = onSnapshot(billRef, (querySnapshot) => {
+      const history = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setPaymentHistory(history);
+    }, (error) => {
+      console.error('Error fetching payment history:', error);
+    });
 
-    fetchPaymentHistory();
+    return () => unsubscribe(); // 컴포넌트 언마운트 시 구독 해제
   }, []);
 
   const renderTransaction = ({ item }) => (

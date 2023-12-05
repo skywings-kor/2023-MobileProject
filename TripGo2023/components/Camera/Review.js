@@ -32,7 +32,7 @@ const ReviewScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text>리뷰를 작성해 주세요.</Text>
       <Image source={{ uri: photoUri }} style={styles.image} />
-      <ScrollView horizontal={true} style={styles.optionsContainer}>
+      {/* <ScrollView horizontal={true} style={styles.optionsContainer}>
         <TouchableOpacity
           style={[styles.optionButton, rating === 'good' && styles.selectedOptionButton]}
           onPress={() => toggleRating('good')}
@@ -57,7 +57,7 @@ const ReviewScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
- 
+  */}
       <TextInput
         style={styles.input}
         onChangeText={setReviewText}

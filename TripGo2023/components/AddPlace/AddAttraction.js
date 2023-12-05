@@ -11,7 +11,7 @@ const AddAttractionScreen = ({ route }) => {
 
   const handleRegisterAttraction = () => {
     if (!attractionName || !description) {
-      Alert.alert('Error', 'Please provide all the required information.');
+      Alert.alert('Error', '모든 항목을 작성해주세요.');
       return;
     }
     const userId = firebaseAuth.currentUser?.uid;
@@ -29,20 +29,20 @@ const AddAttractionScreen = ({ route }) => {
     <View style={styles.container}>
       <Image source={{ uri: photoUri }} style={styles.previewImage} />
       <TextInput
-        placeholder="Enter attraction name"
+        placeholder="관광명소 이름을 작성해주세요"
         value={attractionName}
         onChangeText={setAttractionName}
         style={styles.textInput}
       />
       <TextInput
-        placeholder="Write a description"
+        placeholder="관광명소 설명을 작성해주세요"
         value={description}
         onChangeText={setDescription}
         style={[styles.textInput, styles.descriptionInput]}
         multiline
       />
       <TouchableOpacity onPress={handleRegisterAttraction} style={styles.registerButton}>
-        <Text style={styles.buttonText}>Register Attraction</Text>
+        <Text style={styles.buttonText}>등록하기</Text>
       </TouchableOpacity>
     </View>
   );

@@ -111,7 +111,7 @@ const PaymentScreen = ({ route }) => {
       
       {!isValidAmount && (
         <Text style={styles.errorText}>
-          Payment invalid. Please ensure the QR code is within 3 minutes old and the payment amount does not exceed your points.
+         "결제가 유효하지 않습니다. QR 코드가 생성된 지 3분 이내인지, 그리고 결제 금액이 포인트를 초과하지 않는지 확인해주세요."
         </Text>
       )}
       

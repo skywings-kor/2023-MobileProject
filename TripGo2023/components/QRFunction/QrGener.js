@@ -80,13 +80,13 @@ const QrGener = () => {
         // Points decreased, indicating a payment
         Alert.alert(
           '결제 성공', 
-          `결제가 성공적으로 이루어졌습니다. 사용 포인트: ${Math.abs(pointsDifference)}포인트`,
+          `결제가 성공적으로 이루어졌습니다.\n사용 포인트: ${Math.abs(pointsDifference)}포인트`,
         );
       } else if (pointsDifference > 0) {
         // Points increased, indicating a refund
         Alert.alert(
           '환불 성공',
-          `환불이 성공적으로 이루어졌습니다. 환불 포인트: ${pointsDifference}포인트`,
+          `환불이 성공적으로 이루어졌습니다.\n환불 포인트: ${pointsDifference}포인트`,
         );
       }
   
@@ -173,9 +173,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   logo: {
-    width: '77%',
-    height: '7%',
-    marginBottom: 30,
+    width: '100%', // 너비를 100%로 설정
+    height: '10%', // 높이를 undefined로 설정
+    aspectRatio: 5, // 이미지의 원래 비율을 유지
+    resizeMode: 'contain', // 컨테이너에 맞게 이미지 크기 조정
   },
   paymentButton: {
     backgroundColor: '#007bff',
