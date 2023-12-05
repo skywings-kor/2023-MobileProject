@@ -31,7 +31,7 @@ const ReviewScreen = ({ route, navigation }) => {
 
   //감정 분석 프로세스
   const predictReview = async ()=>{
-
+    
       // 리뷰 텍스트를 분석하기 위한 요청을 보냅니다.
     try {
       let response = await fetch('http://54.166.160.243:5001/predict', {
@@ -59,6 +59,11 @@ const ReviewScreen = ({ route, navigation }) => {
       console.log(responseFeel.positive_prob)
       console.log(responseFeel.negative_prob)
       
+      //useState잘 안되어서 이렇게 전달하려고 하는중
+      const positiveScore = parseInt(responseFeel.positive_prob * 100);
+      const negativeScore = 100-positiveScore
+
+      return { positiveScore, negativeScore };
     } 
 
     catch (error) {
@@ -69,7 +74,7 @@ const ReviewScreen = ({ route, navigation }) => {
 
   //DB에 보내는 감정 결과 값
  // DB에 보내는 감정 결과 값
-  const sendPredictResult = async (item) => {
+  const sendPredictResult = async (item, positiveScore,negativeScore) => {
     try {
       console.log(item)
       console.log(item.addr1)
@@ -77,7 +82,7 @@ const ReviewScreen = ({ route, navigation }) => {
       const predictDocRef = doc(firestoreDB, 'User_Review', item[0].addr1);
       // 필드에 들어갈 내용
       const sendData = {
-        [uid]: [parseFloat(positive), parseFloat(negative)], // 숫자로 변환
+        [uid]: [positiveScore, negativeScore], // 숫자로 변환
         // 다른 필드도 필요하다면 여기에 추가합니다.
       };
 
@@ -122,12 +127,12 @@ const ReviewScreen = ({ route, navigation }) => {
       else
       {
         //AI서버에 보내서 리뷰 결과값 반환하는 프로세스이고 여기서 pos, nega 담겨짐
-        predictReview()
+        const scores= await predictReview()
         
         await useSleep(3000);
         console.log("________________-------")
         console.log(data.response.body.items.item)
-        sendPredictResult(data.response.body.items.item)
+        sendPredictResult(data.response.body.items.item, scores.positiveScore, scores.negativeScore)
 
         await useSleep(1000);
 

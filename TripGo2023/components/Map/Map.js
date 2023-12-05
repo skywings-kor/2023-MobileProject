@@ -11,10 +11,15 @@ import { Picker } from "@react-native-picker/picker";
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { serverTimestamp,firestoreDB, firebaseAuth,collection, doc, setDoc, getDoc, query, orderBy, limit, getDocs, analytics, storage, ref, uploadBytes, getDownloadURL ,onAuthStateChanged, addDoc } from '../../firebaseConfig';
 
+import {AnimatedCircularProgress} from 'react-native-circular-progress'
+
 import Config from '../../API_Config'
 
 
 const Map=()=>{
+
+  //퍼센테이지 설정을 위한거
+  const [fill, setFill] = useState(100); // 예를 들어, 50으로 시작
 
   //API 호출
   const Tour_apiKey = Config.TOUR_API_KEY;
@@ -51,7 +56,7 @@ const Map=()=>{
     ],
     
     [
-      {name: '강남구', latitude: 37.514575, longitude: 127.0495556},
+      {name: '강남구',   latitude: 37.514575, longitude: 127.0495556},
       {name: '강동구', latitude: 37.52736667, longitude: 127.1258639},
       {name: '강북구', latitude: 37.63695556, longitude: 127.0277194},
       {name: '강서구', latitude: 37.54815556, longitude: 126.851675},
@@ -305,7 +310,13 @@ const Map=()=>{
     //Marker용
     const [markerModalVisible, setmarkerModalVisible] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState(null);
-
+    const [selectedAddr1, setSelectedAddr1] = useState(null);
+    
+    //긍정 총합
+    const [totalFirstElements, setTotalFirstElements] = useState(0);
+    
+    //부정 총합
+    const [totalSecondElements, setTotalSecondElements] = useState(0);
 
 
     const counter = [
@@ -440,6 +451,48 @@ const Map=()=>{
 
     }, [festival_Data]);
 
+    //긍정, 부정 값 가져오기 
+    useEffect(() => {
+      const fetchAndSumFirstElements = async () => {
+        if (selectedAddr1) {
+          try {
+            const docRef = doc(firestoreDB, 'User_Review', selectedAddr1);
+            const docSnap = await getDoc(docRef);
+    
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              let total = 0;
+              let count = 0;
+    
+              // 데이터의 각 필드를 순회하면서 배열 첫 번째 요소의 합과 개수를 계산합니다.
+              Object.values(data).forEach((value) => {
+                if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'number') {
+                  total += value[0];
+                  count += 1;
+                }
+              });
+    
+              // 합산 결과를 개수로 나누어 평균을 계산하고, 반올림하여 상태에 저장합니다.
+              const average = count > 0 ? Math.round(total / count) : 0;
+              setTotalFirstElements(average);
+              setTotalSecondElements(100-average);
+              console.log("평균:", average);
+            } else {
+              setTotalFirstElements(0);
+              setTotalSecondElements(0);
+              console.log('No such document!');
+            }
+          } catch (error) {
+            console.error('Error getting document:', error);
+          }
+        }
+      };
+    
+      fetchAndSumFirstElements();
+    }, [selectedAddr1]); // selectedAddr1이 변경될 때마다 이 useEffect가 실행됩니다.
+    
+    
+
     
 
     const [mapRegion, setMapRegion] = useState({
@@ -450,11 +503,22 @@ const Map=()=>{
     });
     
     //이미지 URL 컨트롤
-    const handleCalloutPress = (imageUrl) => {
+    const handleCalloutPress = (imageUrl, addr1) => {
+
+      //주소1 용도
+      setSelectedAddr1(addr1);
+      
+      console.log("TEst")
+      console.log(addr1)
+
+      //이미지 url
       setSelectedImageUrl(imageUrl);
       setmarkerModalVisible(true);
-      console.log(markerModalVisible)
-      console.log(imageUrl)
+      
+      //콘솔로그 테스트용
+      // console.log(markerModalVisible)
+      // console.log(imageUrl)
+
     };
 
     //이미지 모달(팝업창 관련 기능)
@@ -467,9 +531,56 @@ const Map=()=>{
           setmarkerModalVisible(false);
         }}
       >
+
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Image source={selectedImageUrl ? { uri: selectedImageUrl } : require('../../assets/empty_img.png')} style={styles.modalImage} />
+            
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+            <AnimatedCircularProgress
+              size={120}
+              width={6}
+              backgroundWidth={6}
+              fill={totalFirstElements}
+              tintColor="#00d4e7"
+              backgroundColor="#3d5875"
+              arcSweepAngle={260}
+              rotation={225}
+            >
+              {
+                (totalFirstElements)=>(
+                  <Text style={{fontSize:20, textAlignVertical:"center", textAlign:"center", color:"black", marginTop: -30}}>
+                    긍정
+                    {totalFirstElements}%
+                  </Text>
+                  
+                )
+              }
+              </AnimatedCircularProgress>
+
+              <AnimatedCircularProgress
+              size={120}
+              width={6}
+              backgroundWidth={6}
+              fill={totalSecondElements}
+              tintColor="#00d4e7"
+              backgroundColor="#3d5875"
+              arcSweepAngle={260}
+              rotation={225}
+            >
+              {
+                (totalSecondElements)=>(
+                  <Text style={{fontSize:20, textAlignVertical:"center", textAlign:"center", color:"black", marginTop: -30}}>
+                    부정
+                    {totalSecondElements}%
+                  </Text>
+                  
+                )
+              }
+              </AnimatedCircularProgress>
+              </View>
+
+            
             <Button title="닫기" onPress={() => setmarkerModalVisible(false)} />
           </View>
         </View>
@@ -493,7 +604,7 @@ const Map=()=>{
           >
             
 
-        <Callout onPress={() => handleCalloutPress(place.firstimage)}>
+        <Callout onPress={() => handleCalloutPress(place.firstimage, place.addr1)}>
           <Text style={styles.calloutTitle}>{place.title}</Text>
           <Text> {place.addr1} </Text>
         </Callout>
@@ -522,7 +633,10 @@ const Map=()=>{
           {renderMarkers()}
         </MapView>
         <View>
+          
+          {/* 여기가 그 마커 누르고 그안에 팝업누르면 Modal뜨는거 */}
           <ImageModal />
+        
         </View>
         
       <TouchableOpacity style={styles.filterButton} onPress={handleFilterButtonClick}>
