@@ -10,7 +10,7 @@ import GeolocationPosition from 'react-native-geolocation-service';
 const Main = () => {
   //API 호출
   const Tour_apiKey = Config.TOUR_API_KEY;
-
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   //오늘 날짜 계산
   const currentDate = new Date();
   const formattedDate = currentDate.getFullYear() 
@@ -28,6 +28,20 @@ const Main = () => {
   //사용자 현재 위치정보용
   const [location, setLocation] = useState(36.3504,127.3845);
 
+  useEffect(() => {
+    requestPermissions();
+    GeolocationPosition.getCurrentPosition(
+      position => {
+        setLocation(position.coords);
+        setIsLoadingLocation(false); // Set loading to false after getting location
+      },
+      error => {
+        console.error(error.code, error.message);
+        setIsLoadingLocation(false); // Also set loading to false in case of error
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+    );
+  }, []);
 
   const horizontalData = [
     { id: '8', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'text 1', city: 'text' },
@@ -165,20 +179,30 @@ useEffect(() => {
 
   //내 주변 행사 최신화용
   useEffect(() => {
-    const updateNearFes = async () => {
-      try {
-        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=5&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=D&mapX=${location.longitude}&mapY=${location.latitude}&radius=20000&contentTypeId=15`);
+    if (!isLoadingLocation && location) {
+      const updateNearFes = async () => {
+        try {
+          const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=5&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=D&mapX=${location.longitude}&mapY=${location.latitude}&radius=20000&contentTypeId=15`);
 
-        const data = await response.json();
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
 
-        setNearFestival(data.response.body.items.item);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+          const data = await response.json();
 
-    updateNearFes();
-  }, []);
+          if (!data || !data.response || !data.response.body) {
+            throw new Error('Invalid data structure');
+          }
+
+          setNearFestival(data.response.body.items.item);
+        } catch (error) {
+          console.error('Error fetching nearby festivals:', error);
+        }
+      };
+
+      updateNearFes();
+    }
+  }, [location, isLoadingLocation]);
 
 
 
@@ -312,11 +336,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain', 
    
   },
-    gridItem: {
+  gridItem: {
     flex: 1 / 2, 
-    aspectRatio: 1, 
-    margin: 4, 
-    
+    aspectRatio: 1, // 이 부분은 유지하거나 조정할 수 있습니다.
+    margin: 4,
+    height: 200, // 요소의 높이를 늘렸습니다.
+    padding: 10, // 내부 패딩을 추가하여 텍스트에 공간을 제공합니다.
   },
   gridImage: {
     width: '100%', 

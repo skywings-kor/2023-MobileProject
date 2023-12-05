@@ -18,6 +18,7 @@ const CameraScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
+  
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermission();

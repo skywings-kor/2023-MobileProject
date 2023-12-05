@@ -1,10 +1,14 @@
 import React, { useState, useEffect ,useRef  } from 'react';
 import { View, StyleSheet, Image, TextInput, Button, Text, ScrollView, TouchableOpacity,Alert  } from 'react-native';
 import Config from '../../API_Config'
-import { firestoreDB, doc, updateDoc, addDoc, collection,firebaseAuth ,getDoc} from '../../firebaseConfig'; 
+import { firestoreDB, doc, setDoc, updateDoc, addDoc, collection,firebaseAuth ,getDoc} from '../../firebaseConfig'; 
+
+export const useSleep = delay => new Promise(resolve => setTimeout(resolve, delay));
 
 
 const ReviewScreen = ({ route, navigation }) => {
+
+  const Tour_apiKey = Config.TOUR_API_KEY;
 
   const { photoUri,location } = route.params;
 
@@ -47,9 +51,14 @@ const ReviewScreen = ({ route, navigation }) => {
       let responseFeel = await response.json();
       console.log(responseFeel);
 
+
       // 응답으로부터 긍정 및 부정 감정의 수치를 추출 그리고 상태에 저장
       setPositive(responseFeel.positive_prob);
       setNegative(responseFeel.negative_prob);
+      
+      console.log(responseFeel.positive_prob)
+      console.log(responseFeel.negative_prob)
+      
     } 
 
     catch (error) {
@@ -59,32 +68,33 @@ const ReviewScreen = ({ route, navigation }) => {
   }
 
   //DB에 보내는 감정 결과 값
-  const sendPredictResult = async () =>{
+ // DB에 보내는 감정 결과 값
+  const sendPredictResult = async (item) => {
     try {
-
-      //세팅 잡아주고 주소...q
-      const predictDocRef = collection(firestoreDB, 'User_Review', item.addr1);
-
-      // 필드에 들어갈 내용이고
+      console.log(item)
+      console.log(item.addr1)
+      // 문서 참조 생성. 여기서 item.addr1은 문서 ID가 됩니다.
+      const predictDocRef = doc(firestoreDB, 'User_Review', item[0].addr1);
+      // 필드에 들어갈 내용
       const sendData = {
-        uid: [parseInt(positive), parseInt(negative)]
-
+        [uid]: [parseFloat(positive), parseFloat(negative)], // 숫자로 변환
+        // 다른 필드도 필요하다면 여기에 추가합니다.
       };
 
+      // 문서에 데이터 설정 (특정 문서에 데이터를 추가하거나 업데이트)
+      await setDoc(predictDocRef, sendData, { merge: true });
 
-      //DB추가 시작 feat... 제발되라
-      await addDoc(predictDocRef, sendData);
-
-
-
-    }
-
-    catch (e){
+      console.log('Document successfully written!');
+    } catch (e) {
       console.error('Error writing document: ', e);
     }
-    
-  }
+  };
 
+
+  //핸들링 - festival data용도
+  const handleFestival_Data=(item)=>{
+    setFestival_Data(item);
+  }
   //전송 버튼 누를 때 이벤트
   const submitReview = async () => {
     console.log(reviewText, rating, satisfied,location);
@@ -96,7 +106,7 @@ const ReviewScreen = ({ route, navigation }) => {
       const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&mapX=127.0558311227&mapY=36.7477392141&radius=300&contentTypeId=12`);
       const data = await response.json();
 
-      setFestival_Data(data.response.body.items.item);
+      handleFestival_Data(data.response.body.items.item);
       
       if (data.response.body.totalCount === 0) {
         Alert.alert(
@@ -113,9 +123,13 @@ const ReviewScreen = ({ route, navigation }) => {
       {
         //AI서버에 보내서 리뷰 결과값 반환하는 프로세스이고 여기서 pos, nega 담겨짐
         predictReview()
+        
+        await useSleep(3000);
+        console.log("________________-------")
+        console.log(data.response.body.items.item)
+        sendPredictResult(data.response.body.items.item)
 
-        sendPredictResult()
-
+        await useSleep(1000);
 
         Alert.alert(
           "알림", // Alert Title
@@ -127,10 +141,6 @@ const ReviewScreen = ({ route, navigation }) => {
         );
 
       }
-
-      
-
-
     }
     
     catch (error) {

@@ -20,6 +20,7 @@ import Map from "./components/Map/Map"
 import Camera from "./components/Camera/Camera"
 import Review from "./components/Camera/Review"
 import Option from "./components/Camera/Option"
+import AddAttraction from "./components/AddPlace/AddAttraction"
 
 //QR관련
 import Payment from "./components/QRFunction/Payment"
@@ -32,10 +33,13 @@ import ChatBot from "./components/ChatBot/Chat_Page"
 //유저 개인정보
 import PaymentHis from "./components/User_Personal/PaymentHistory"
 import SellHis from "./components/User_Personal/SellHistory"
-
+import Stroe from "./components/Store/Store"
 
 import React, {useState} from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import StoreRegistration from "./components/Store/StoreRegistraion";
+import StoreDetailScreen from "./components/Store/StoreDetail";
+import ProductDetail from "./components/AreaProduct/ProductDetail";
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -105,7 +109,7 @@ const App =()=>{
 
           <Tab.Screen
             name="지역특산품"
-            component={PD}
+            component={Stroe}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Image
@@ -170,6 +174,7 @@ const App =()=>{
             component={SignUp}
             options={{ headerShown: true }}
           /> 
+          
 
 
           
@@ -204,14 +209,14 @@ const MainScreen = () => {
       <Stack.Screen name="상세페이지" component={detailPD} />
 
       <Stack.Screen name="리뷰등록" component={Review} />
-
+      <Stack.Screen name="상품상세" component={ProductDetail} />
       <Stack.Screen name="특산물추가" component={productAdd} />
       <Stack.Screen name="QR결재" component={Payment} />
-
+      <Stack.Screen name="상점등록" component={StoreRegistration}/>
       {/* <Stack.Screen name="QrGener" component={QrGener} /> */}
-
+      <Stack.Screen name="상점상세" component={StoreDetailScreen}/>
       <Stack.Screen name="QR스캔" component={QRScannerScreen} />
-
+      
       <Stack.Screen name="선택" component={Option} />
 
       <Stack.Screen name="고객상담" component={ChatBot} />
@@ -219,6 +224,7 @@ const MainScreen = () => {
       <Stack.Screen name="결제내역" component={PaymentHis} />
 
       <Stack.Screen name="판매내역" component={SellHis} />
+      <Stack.Screen name="관광지등록" component={AddAttraction} />
 
       {/*
       <Stack.Screen name="MyPage" component={UI} />
