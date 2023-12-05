@@ -136,7 +136,7 @@ const Main = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${Tour_apiKey}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&eventStartDate=${formattedDate}`);
+        const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${Tour_apiKey}&numOfRows=15&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&eventStartDate=${formattedDate}`);
         console.log("이건왜 안됨")
         console.log(process.env.TOUR_API_KEY)
 

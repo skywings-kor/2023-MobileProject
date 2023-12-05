@@ -1,7 +1,7 @@
 import React, { useState, useEffect ,useRef  } from 'react';
 import { View, StyleSheet, Image, TextInput, Button, Text, ScrollView, TouchableOpacity,Alert  } from 'react-native';
 import Config from '../../API_Config'
-import { firestoreDB, doc, setDoc, updateDoc, addDoc, collection,firebaseAuth ,getDoc} from '../../firebaseConfig'; 
+import { runTransaction, firestoreDB, doc, setDoc, updateDoc, addDoc, collection,firebaseAuth ,getDoc} from '../../firebaseConfig'; 
 
 export const useSleep = delay => new Promise(resolve => setTimeout(resolve, delay));
 
@@ -100,6 +100,30 @@ const ReviewScreen = ({ route, navigation }) => {
   const handleFestival_Data=(item)=>{
     setFestival_Data(item);
   }
+
+  //리뷰가 성공적으로 등록되었을 때 100포인트 주기위한 기능
+  const incrementUserPoints = async () => {
+    try {
+
+      const docRef = doc(firestoreDB, 'userInfo', uid);
+  
+      await runTransaction(firestoreDB, async (transaction) => {
+        const userDoc = await transaction.get(docRef);
+        if (!userDoc.exists()) {
+          throw "Document does not exist!";
+        }
+  
+        const newPoints = (userDoc.data().point || 0) + 100; // 기존 포인트에 100을 더합니다.
+        transaction.update(docRef, { point: newPoints });
+      });
+  
+      console.log("User points successfully incremented by 100");
+    } catch (error) {
+      console.error("Error incrementing user points: ", error);
+    }
+  };
+
+
   //전송 버튼 누를 때 이벤트
   const submitReview = async () => {
     console.log(reviewText, rating, satisfied,location);
@@ -107,8 +131,8 @@ const ReviewScreen = ({ route, navigation }) => {
     //1차적으로 현재 사용자 핸드폰으로 사진 찍은 위치가 이 근방에 해당 관광지가 있는지! 검증
     try {
 
-      //300m 안 감지
-      const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&mapX=127.0558311227&mapY=36.7477392141&radius=300&contentTypeId=12`);
+      //200m 안 감지
+      const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=10&pageNo=1&MobileOS=AND&MobileApp=TripGO&_type=json&listYN=Y&arrange=A&mapX=${location.longitude}&mapY=${location.latitude}&radius=200&contentTypeId=12`);
       const data = await response.json();
 
       handleFestival_Data(data.response.body.items.item);
@@ -133,6 +157,10 @@ const ReviewScreen = ({ route, navigation }) => {
         console.log("________________-------")
         console.log(data.response.body.items.item)
         sendPredictResult(data.response.body.items.item, scores.positiveScore, scores.negativeScore)
+
+        await useSleep(1000);
+
+        incrementUserPoints();
 
         await useSleep(1000);
 

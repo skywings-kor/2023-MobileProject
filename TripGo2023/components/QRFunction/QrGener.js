@@ -85,8 +85,8 @@ const QrGener = () => {
       } else if (pointsDifference > 0) {
         // Points increased, indicating a refund
         Alert.alert(
-          '환불 성공',
-          `환불이 성공적으로 이루어졌습니다.\n환불 포인트: ${pointsDifference}포인트`,
+          '포인트가 충전되었습니다.',
+          `충전이 성공적으로 이루어졌습니다.\n충전 포인트: ${pointsDifference}포인트`,
         );
       }
   

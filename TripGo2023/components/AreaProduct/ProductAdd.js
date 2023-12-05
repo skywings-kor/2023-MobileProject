@@ -95,7 +95,7 @@ const ProductAdd = ({ route }) => {
         await addDoc(productCollectionRef, productData);
     
         setIsLoading(false); // Set loading state to false
-        Alert.alert('Product Registered', 'Product has been registered successfully.', [
+        Alert.alert('상품 등록', '성공적으로 상품이 등록되었습니다.', [
           {
             text: 'OK',
             onPress: () => {
@@ -128,7 +128,7 @@ const ProductAdd = ({ route }) => {
         />
         <TextInput
           style={styles.input}
-          placeholder="상품 가격(ex: 15,000원)"
+          placeholder="상품 가격(ex: 15000)"
           value={productPrice}
           onChangeText={(text) => setProductPrice(text)}
           keyboardType="numeric"

@@ -114,7 +114,7 @@ const Store = () => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.message}>{"환영합니다!\n 무작위로 선택된 4개의 상점입니다. \n 자세히 살펴보고 관심 있는 상점을 찾아보세요. \n 새로운 상점을 등록하려면 \n'+' 버튼을 눌러주세요!"}</Text>
+        <Text style={styles.message}>{"환영합니다!\n 자세히 살펴보고 관심 있는 상점을 찾아보세요. \n 새로운 상점을 등록하려면 \n'+' 버튼을 눌러주세요!"}</Text>
 
         <FlatList
           data={filteredStores}
