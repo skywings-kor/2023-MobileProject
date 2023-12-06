@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image, TextInput, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image, TextInput, Alert, ActivityIndicator } from 'react-native';
 import {
   firestoreDB,
   collection,
@@ -18,43 +18,50 @@ const AddAttractionScreen = ({ route }) => {
   const { photoUri, location } = route.params;
   const [attractionName, setAttractionName] = useState('');
   const [description, setDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // 인디케이터 표시 상태
   const navigation = useNavigation();
 
   const handleRegisterAttraction = async () => {
     if (!attractionName || !description) {
-      Alert.alert('Error', 'Please provide all the required information.');
+      Alert.alert('Error', '내용을 전부 작성해주세요.');
       return;
     }
+
     const userId = firebaseAuth.currentUser?.uid;
-    console.log('Attraction Name:', attractionName);
-    console.log('Photo URI:', photoUri);
-    console.log('Location:', location);
-    console.log('User ID:', userId);
-    console.log('Description:', description);
 
+    try {
+      setIsLoading(true); // 등록 중에 인디케이터 표시 시작
 
-    try{
+      // Upload the image to Firebase Storage
+      const response = await fetch(photoUri);
+      const blob = await response.blob();
+      const imageRef = ref(storage, `attractionImages/${userId}_${Date.now()}.jpg`);
+      await uploadBytes(imageRef, blob);
+
+      // Get the download URL of the uploaded image
+      const imageUrl = await getDownloadURL(imageRef);
+
+      // Create attraction data with image URL
       const attractionData = {
         attractionName: attractionName,
         description: description,
         longitude: location.longitude,
-        image: photoUri,
+        image: imageUrl, // Use the image URL
         latitude: location.latitude,
       };
-  
-      const tripCollectionRef = collection(firestoreDB, 'User_Tourlist', userId);
+
+      // Add attraction data to Firestore
+      const tripCollectionRef = collection(firestoreDB, 'User_Tourlist', userId, 'history');
       await addDoc(tripCollectionRef, attractionData);
-  
-    }
 
-    catch (e){
-      console.error("ERROR발생: ",e);
-      Alert.alert('에러', '사용자 관광지 등록에 오류 발생');
+      setIsLoading(false); // 등록 성공하면 인디케이터 숨김
+      Alert.alert('등록 성공!'); // 성공 메시지 표시
+      navigation.navigate('main'); // Replace 'Home' with your home screen route name
+    } catch (error) {
+      setIsLoading(false); // 등록 실패하면 인디케이터 숨김
+      console.error('Error registering attraction: ', error);
+      Alert.alert('Error', 'Failed to register attraction.');
     }
-    
-
-    navigation.navigate('main'); // Replace 'Home' with your home screen route name
-    // Add your logic here to save these details to a database or a server
   };
 
   return (
@@ -76,9 +83,15 @@ const AddAttractionScreen = ({ route }) => {
       <TouchableOpacity onPress={handleRegisterAttraction} style={styles.registerButton}>
         <Text style={styles.buttonText}>관광지 등록</Text>
       </TouchableOpacity>
+      {isLoading && (
+        <View style={styles.indicatorContainer}>
+          <ActivityIndicator size="large" color="#007bff" />
+        </View>
+      )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -116,7 +129,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-  });
-  
+  indicatorContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
-  export default AddAttractionScreen;
+export default AddAttractionScreen;

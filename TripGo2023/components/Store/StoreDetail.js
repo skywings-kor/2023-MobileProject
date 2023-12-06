@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  storeImage: {
+  storeImage: { 
     width: 200,
     height: 200,
     borderRadius: 10,

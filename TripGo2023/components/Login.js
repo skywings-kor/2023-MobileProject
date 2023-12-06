@@ -21,9 +21,7 @@ export default function Login({ handleLogin, navigation }) {
       })
       .catch((error) => {
         // 로그인 실패 시 처리할 코드입니다!
-        if (error.code === 'auth/invalid-email') {
-          alert('아이디 혹은 비밀번호가 틀렸습니다.');
-        }
+        alert('아이디 혹은 비밀번호가 틀렸습니다.');
       });
   };
 

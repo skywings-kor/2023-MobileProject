@@ -62,27 +62,36 @@ const Main = () => {
     { id: '7', u_img: 'https://via.placeholder.com/150', timestamp: new Date(), region: 'Region 1', city: 'City A' },
   ];
 
-  const renderHorizontalItem = ({ item }) => (
-    <TouchableOpacity style={styles.gridItemHorizontal}>
-        <Image 
-          source={item.firstimage ? { uri: item.firstimage } : require('../assets/empty_img.png')}
-          style={styles.gridImageHorizontal} 
-        />
+  const renderHorizontalItem = ({ item }) => {
+    const handleLinkPress = () => {
+      
+      const url = `https://www.ktourmap.com/spotDetails.jsp?contentId=${item.contentid}`;
+      Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
+    };
 
-        {/* <Text style={styles.gridText}>
-          기간: {item.eventstartdate} ~ {item.eventenddate}
-        </Text> */}
-        
-        <Text style={styles.gridText}>
-          {item.title}
-        </Text>
 
-        <Text style={styles.gridText}>
-          장소: {item.addr1}
-        </Text>
+    return(
+      <TouchableOpacity style={styles.gridItemHorizontal} onPress={handleLinkPress}>
+          <Image 
+            source={item.firstimage ? { uri: item.firstimage } : require('../assets/empty_img.png')}
+            style={styles.gridImageHorizontal} 
+          />
 
-    </TouchableOpacity>
-  );
+          {/* <Text style={styles.gridText}>
+            기간: {item.eventstartdate} ~ {item.eventenddate}
+          </Text> */}
+          
+          <Text style={styles.gridText}>
+            {item.title}
+          </Text>
+
+          <Text style={styles.gridText}>
+            장소: {item.addr1}
+          </Text>
+
+      </TouchableOpacity>
+    )
+  };
   
   // ?.toISOString().split('T')[0]
   // 수직 스크롤 아이템 렌더링 함수
@@ -182,6 +191,7 @@ useEffect(() => {
     if (!isLoadingLocation && location) {
       const updateNearFes = async () => {
         try {
+          //20km내 감지하는거입니다
           const response = await fetch(`https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${Tour_apiKey}&numOfRows=5&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=D&mapX=${location.longitude}&mapY=${location.latitude}&radius=20000&contentTypeId=15`);
 
           if (!response.ok) {

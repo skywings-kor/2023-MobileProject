@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList ,TouchableOpacity,TextInput,Alert} from 'react-native';
+import { View, Text, StyleSheet, FlatList ,TouchableOpacity,TextInput,Alert,ActivityIndicator } from 'react-native';
 import { firestoreDB, collection, getDoc,getDocs, firebaseAuth ,doc,updateDoc} from '../../firebaseConfig'; // Ensure these are correctly imported
 import { useFocusEffect } from '@react-navigation/native';
 const SellHistoryScreen = () => {
   const [sellHistory, setSellHistory] = useState([]);
   const [refundRandomNumber, setRefundRandomNumber] = useState('');
+  const [isProcessingRefund, setIsProcessingRefund] = useState(false);
   const fetchSellHistory = async () => {
     const uid = firebaseAuth.currentUser.uid;
     const sellBillRef = collection(firestoreDB, 'User_Receipt', uid, 'sellbill');
@@ -26,6 +27,7 @@ const SellHistoryScreen = () => {
   }, []);
 
   const processRefund = async (item) => {
+    setIsProcessingRefund(true);
     if (refundRandomNumber.toString() === item.randomNumber.toString()) {
       // Update transaction status to '환불' in seller's record
       const sellerTransactionRef = doc(firestoreDB, 'User_Receipt', item.sellerUid, 'sellbill', item.id);
@@ -51,7 +53,9 @@ const SellHistoryScreen = () => {
   
       Alert.alert('환불 성공', 'Refund successful.');
       fetchSellHistory();
+      setIsProcessingRefund(false);
     } else {
+      setIsProcessingRefund(false);
       Alert.alert('환불 실패', 'Incorrect random number.');
     }
   };
@@ -89,11 +93,15 @@ const SellHistoryScreen = () => {
         value={refundRandomNumber}
         onChangeText={setRefundRandomNumber}
       />
-      <FlatList
-        data={sellHistory}
-        renderItem={renderTransaction}
-        keyExtractor={(item) => item.id}
-      />
+      {isProcessingRefund ? (
+        <ActivityIndicator size="large" color="blue" />
+      ) : (
+        <FlatList
+          data={sellHistory}
+          renderItem={renderTransaction}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 };

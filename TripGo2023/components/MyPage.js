@@ -258,13 +258,13 @@ const MyPage = () => {
         <TouchableOpacity style={styles.button} onPress={handleInfoChange}>
             <Text style={styles.buttonText}>사용자 정보 변경</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleDeleteAccount}>
+        {/* <TouchableOpacity style={styles.button} onPress={handleDeleteAccount}>
             <Text style={styles.buttonText}>회원 탈퇴</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        {/* <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Text style={styles.buttonText}>로그아웃</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </View>
        {/* Modal for editing user information */}

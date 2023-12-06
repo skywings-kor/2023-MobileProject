@@ -312,6 +312,10 @@ const Map=()=>{
     const [selectedImageUrl, setSelectedImageUrl] = useState(null);
     const [selectedAddr1, setSelectedAddr1] = useState(null);
     
+    //Marker용인데 이건 사용자만의 관광지 등록한거
+    const [myAttraction, setMyAttraction] = useState([]);
+    
+
     //긍정 총합
     const [totalFirstElements, setTotalFirstElements] = useState(0);
     
@@ -379,6 +383,7 @@ const Map=()=>{
           console.error('Error:', error);
         }
 
+      
 
     };   
 
@@ -451,6 +456,31 @@ const Map=()=>{
 
     }, [festival_Data]);
 
+    
+    //좌표 값에 들어있는 것이 바뀌는 경우를 감지했을 때, 작동되도록(마커찍는것이 그 내 관광지임)
+    useEffect(() => {
+      const fetchUserHistory = async () => {
+        // 사용자 UID를 얻습니다. 예시에서는 하드코딩된 값입니다.
+        const userId = firebaseAuth.currentUser.uid;
+        // 'User_Tourlist' 컬렉션 내 'userId' 문서의 'history' 서브컬렉션에 대한 참조를 생성합니다.
+        const historyRef = collection(firestoreDB, 'User_Tourlist', userId, 'history');
+    
+        try {
+          // 'history' 서브컬렉션의 모든 문서를 조회합니다.
+          const querySnapshot = await getDocs(query(historyRef));
+          // 문서 데이터를 추출하여 배열로 만듭니다.
+          const historyData = querySnapshot.docs.map(doc => doc.data());
+          // 상태를 업데이트합니다.
+          setMyAttraction(historyData);
+          console.log("Fetched history data:", historyData);
+        } catch (error) {
+          console.error("Error fetching history data:", error);
+        }
+      };
+    
+      fetchUserHistory();
+    }, [festival_Data]);
+
     //긍정, 부정 값 가져오기 
     useEffect(() => {
       const fetchAndSumFirstElements = async () => {
@@ -507,7 +537,8 @@ const Map=()=>{
 
       //주소1 용도
       setSelectedAddr1(addr1);
-      
+      setTotalFirstElements(0);
+      setTotalSecondElements(0);
       console.log("TEst")
       console.log(addr1)
 
@@ -621,6 +652,44 @@ const Map=()=>{
       return null;
     };
 
+
+
+    
+
+    // 내 관광지 정보를 추가하는 마커용
+    const renderMyAttraction = () => {
+      // console.log(festival_Data)
+      if (Array.isArray(myAttraction)) {
+        
+        return myAttraction.map((place, index) => (
+          <Marker
+            key={place.image} // 고유한 key를 사용하는 것이 좋습니다.
+            coordinate={{
+              latitude: parseFloat(place.latitude),
+              longitude: parseFloat(place.longitude),
+            }}
+            title={place.attractionName}
+            description={place.description}
+            pinColor="blue"
+          >
+            
+
+        <Callout onPress={() => handleCalloutPress(place.image)}>
+          <Text style={styles.calloutTitle}>{place.attractionName}</Text>
+          <Text> {place.description} </Text>
+        </Callout>
+
+          </Marker>
+
+        ));
+
+        console.log(festival_Data)
+      }
+
+      return null;
+    };
+
+
     
     return(
       <View style={styles.container}>
@@ -631,6 +700,9 @@ const Map=()=>{
           style={styles.map}
         >
           {renderMarkers()}
+          {renderMyAttraction()}
+          
+
         </MapView>
         <View>
           

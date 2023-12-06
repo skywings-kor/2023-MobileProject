@@ -7,6 +7,8 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
 const SignUp = () => {
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
@@ -65,6 +67,7 @@ const SignUp = () => {
 
           
         alert('회원가입 성공!');
+        navigation.navigate('Login');
         // 여기에 회원가입 후 처리할 로직 추가
       })
       .catch((error) => {
